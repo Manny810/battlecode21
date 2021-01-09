@@ -1,14 +1,27 @@
 package basicplayer;
 import battlecode.common.*;
+import javafx.util.Pair;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
+
+    static Map<MapLocation, Double> passabilities;
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
             RobotType.SLANDERER,
             RobotType.MUCKRAKER,
     };
+
+    static final int ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED = 40;
+    static final int POLITICIAN_SENSOR_RADIUS_SQUARED = 40;
+    static final int SLANDERER_SENSOR_RADIUS_SQUARED = 40;
+    static final int MUCKRAKER_SENSOR_RADIUS_SQUARED = 40;
+
 
     static final Direction[] directions = {
             Direction.NORTH,
@@ -29,6 +42,9 @@ public strictfp class RobotPlayer {
      **/
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
+
+        // update passabilities field with what the robot sees
+        getSensedSquares();
 
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
@@ -140,6 +156,35 @@ public strictfp class RobotPlayer {
             rc.move(dir);
             return true;
         } else return false;
+    }
+
+    static Set<MapLocation> getSensedSquares() throws GameActionException {
+        MapLocation curLocation = rc.getLocation();
+        int radiusSquared = getSenseRadiusSquared();
+        Set<MapLocation> sensedSquares = new HashSet<>();
+        curLocation.translate(-radiusSquared, -radiusSquared);
+        for (int x = 0; x <= 2*radiusSquared; x++){
+            for (int y = 0; y <= 2*radiusSquared; y++){
+                if (!passabilities.containsKey(curLocation)){
+                    if (rc.canSenseLocation(curLocation)) {
+                        double passability = rc.sensePassability(curLocation);
+                        passabilities.put(curLocation, passability);
+                    }
+                }
+                curLocation.translate(1,0);
+            }
+            curLocation.translate(-2*radiusSquared, 1);
+        }
+        return sensedSquares;
+    }
+
+    static Integer getSenseRadiusSquared(){
+        switch (rc.getType()) {
+            case ENLIGHTENMENT_CENTER: return ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED; break;
+            case POLITICIAN:           return POLITICIAN_SENSOR_RADIUS_SQUARED;          break;
+            case SLANDERER:            return SLANDERER_SENSOR_RADIUS_SQUARED;           break;
+            case MUCKRAKER:            return MUCKRAKER_SENSOR_RADIUS_SQUARED;           break;
+        }
     }
 
     private static final double passabilityThreshold = 0.5;
