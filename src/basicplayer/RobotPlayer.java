@@ -180,10 +180,10 @@ public strictfp class RobotPlayer {
 
     static Integer getSenseRadiusSquared(){
         switch (rc.getType()) {
-            case ENLIGHTENMENT_CENTER: return ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED; break;
-            case POLITICIAN:           return POLITICIAN_SENSOR_RADIUS_SQUARED;          break;
-            case SLANDERER:            return SLANDERER_SENSOR_RADIUS_SQUARED;           break;
-            case MUCKRAKER:            return MUCKRAKER_SENSOR_RADIUS_SQUARED;           break;
+            case ENLIGHTENMENT_CENTER: return ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED;
+            case POLITICIAN:           return POLITICIAN_SENSOR_RADIUS_SQUARED;
+            case SLANDERER:            return SLANDERER_SENSOR_RADIUS_SQUARED;
+            case MUCKRAKER:            return MUCKRAKER_SENSOR_RADIUS_SQUARED;
         }
         return null;
     }
