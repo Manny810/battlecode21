@@ -185,6 +185,7 @@ public strictfp class RobotPlayer {
             case SLANDERER:            return SLANDERER_SENSOR_RADIUS_SQUARED;           break;
             case MUCKRAKER:            return MUCKRAKER_SENSOR_RADIUS_SQUARED;           break;
         }
+        return null;
     }
 
     private static final double passabilityThreshold = 0.5;
