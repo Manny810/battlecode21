@@ -189,16 +189,40 @@ public strictfp class RobotPlayer {
 
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
+    private static MapLocation oldPositionOnTargetLine = null;
 
     static void basicBugStraightLine(MapLocation targetLocation) throws GameActionException {
         Direction d = rc.getLocation().directionTo(targetLocation);
         while (true) {
+            if (oldPositionOnTargetLine == null) { // Record initial location
+                oldPositionOnTargetLine = rc.getLocation();
+            }
             if (rc.getLocation().equals(targetLocation)) {
                 // perform some action based on the unit
             } else if (rc.isReady()) { // Moving towards targetLocation
-                if (rc.canMove(d))
+                if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
+                    MapLocation currentLocation = rc.getLocation();
+                    if (oldPositionOnTargetLine.distanceSquaredTo(targetLocation) < currentLocation.distanceSquaredTo(targetLocation)) {
+                        // Somehow keep moving
+                    } else {
+                        rc.move(d);
+                        oldPositionOnTargetLine = rc.getLocation();
+                        bugDirection = null;
+                    }
+                } else { // Can't move towards targetLocation
+                    if (bugDirection == null) {
+                        bugDirection = d.rotateRight();
+                    }
+                    for (int i = 0; i < 8; i++) {
+                        if (rc.canMove(bugDirection) && rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold) {
+                            rc.move(bugDirection);
+                            break;
+                        }
+                        bugDirection = bugDirection.rotateRight();
+                    }
+                }
+                Clock.yield();
             }
-            Clock.yield();
         }
     }
 }
