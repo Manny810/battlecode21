@@ -63,7 +63,7 @@ public strictfp class RobotPlayer {
     public static void run(RobotController rc) throws GameActionException {
 
         // update passabilities field with what the robot sees
-        getSensedSquares();
+//        getSensedSquares();
 
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
@@ -80,10 +80,10 @@ public strictfp class RobotPlayer {
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
                 switch (rc.getType()) {
-                    case ENLIGHTENMENT_CENTER: runEnlightenmentCenter(); break;
-                    case POLITICIAN:           runPolitician();          break;
-                    case SLANDERER:            runSlanderer();           break;
-                    case MUCKRAKER:            runMuckraker();           break;
+                    case ENLIGHTENMENT_CENTER: EnlightenmentCenter.runEnlightenmentCenter(rc); break;
+                    case POLITICIAN:           Politician.runPolitician(rc);          break;
+                    case SLANDERER:            Slanderer.runSlanderer(rc);           break;
+                    case MUCKRAKER:            Muckraker.runMuckraker(rc);           break;
                 }
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
@@ -96,53 +96,53 @@ public strictfp class RobotPlayer {
         }
     }
 
-    static void runEnlightenmentCenter() throws GameActionException {
-        RobotType toBuild = randomSpawnableRobotType();
-        int influence = 50;
-        for (Direction dir : directions) {
-            if (rc.canBuildRobot(toBuild, dir, influence)) {
-                rc.buildRobot(toBuild, dir, influence);
-            } else {
-                break;
-            }
-        }
-    }
+//    static void runEnlightenmentCenter() throws GameActionException {
+//        RobotType toBuild = randomSpawnableRobotType();
+//        int influence = 50;
+//        for (Direction dir : directions) {
+//            if (rc.canBuildRobot(toBuild, dir, influence)) {
+//                rc.buildRobot(toBuild, dir, influence);
+//            } else {
+//                break;
+//            }
+//        }
+//    }
 
-    static void runPolitician() throws GameActionException {
-        Team enemy = rc.getTeam().opponent();
-        int actionRadius = rc.getType().actionRadiusSquared;
-        RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
-        if (attackable.length != 0 && rc.canEmpower(actionRadius)) {
-            System.out.println("empowering...");
-            rc.empower(actionRadius);
-            System.out.println("empowered");
-            return;
-        }
-        if (tryMove(randomDirection()))
-            System.out.println("I moved!");
-    }
+//    static void runPolitician() throws GameActionException {
+//        Team enemy = rc.getTeam().opponent();
+//        int actionRadius = rc.getType().actionRadiusSquared;
+//        RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
+//        if (attackable.length != 0 && rc.canEmpower(actionRadius)) {
+//            System.out.println("empowering...");
+//            rc.empower(actionRadius);
+//            System.out.println("empowered");
+//            return;
+//        }
+//        if (tryMove(randomDirection()))
+//            System.out.println("I moved!");
+//    }
 
-    static void runSlanderer() throws GameActionException {
-        if (tryMove(randomDirection()))
-            System.out.println("I moved!");
-    }
+//    static void runSlanderer() throws GameActionException {
+//        if (tryMove(randomDirection()))
+//            System.out.println("I moved!");
+//    }
 
-    static void runMuckraker() throws GameActionException {
-        Team enemy = rc.getTeam().opponent();
-        int actionRadius = rc.getType().actionRadiusSquared;
-        for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {
-            if (robot.type.canBeExposed()) {
-                // It's a slanderer... go get them!
-                if (rc.canExpose(robot.location)) {
-                    System.out.println("e x p o s e d");
-                    rc.expose(robot.location);
-                    return;
-                }
-            }
-        }
-        if (tryMove(randomDirection()))
-            System.out.println("I moved!");
-    }
+//    static void runMuckraker() throws GameActionException {
+//        Team enemy = rc.getTeam().opponent();
+//        int actionRadius = rc.getType().actionRadiusSquared;
+//        for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {
+//            if (robot.type.canBeExposed()) {
+//                // It's a slanderer... go get them!
+//                if (rc.canExpose(robot.location)) {
+//                    System.out.println("e x p o s e d");
+//                    rc.expose(robot.location);
+//                    return;
+//                }
+//            }
+//        }
+//        if (tryMove(randomDirection()))
+//            System.out.println("I moved!");
+//    }
 
     /**
      * Returns a random Direction.
@@ -273,29 +273,34 @@ public strictfp class RobotPlayer {
     private static MapLocation oldPositionOnTargetLine = null;
 
     static void basicBugStraightLine(MapLocation targetLocation) throws GameActionException {
-        Direction d = rc.getLocation().directionTo(targetLocation);
         while (true) {
+            Direction d = rc.getLocation().directionTo(targetLocation);
+            System.out.println("Direction to target" + d);
             if (oldPositionOnTargetLine == null) { // Record initial location
                 oldPositionOnTargetLine = rc.getLocation();
             }
             if (rc.getLocation().equals(targetLocation)) {
+                System.out.println("I have reached the target location");
                 // perform some action based on the unit
             } else if (rc.isReady()) { // Moving towards targetLocation
                 if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
                     MapLocation currentLocation = rc.getLocation();
-                    if (oldPositionOnTargetLine.distanceSquaredTo(targetLocation) < currentLocation.distanceSquaredTo(targetLocation)) {
-                        // Somehow keep moving
-                        rc.move(bugDirection);
-                    } else {
+//                    if (oldPositionOnTargetLine.distanceSquaredTo(targetLocation) < currentLocation.distanceSquaredTo(targetLocation)) {
+//                        // Somehow keep moving
+//                        rc.move(bugDirection);
+//                    } else {
                         rc.move(d);
-                        oldPositionOnTargetLine = rc.getLocation();
+                    System.out.println("Moved in direction of" + d);
+                    oldPositionOnTargetLine = rc.getLocation();
                         bugDirection = null;
-                    }
+//                    }
                 } else { // Can't move towards targetLocation
                     if (bugDirection == null) {
                         bugDirection = d.rotateRight();
                     }
+                    System.out.println("Hello");
                     for (int i = 0; i < 8; i++) {
+                        System.out.println("bugDirection " + bugDirection + "Can move there "  + rc.canMove(bugDirection) + "Passability at that spot " + rc.sensePassability(rc.getLocation().add(bugDirection)));
                         if (rc.canMove(bugDirection) && rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold) {
                             rc.move(bugDirection);
                             break;
