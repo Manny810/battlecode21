@@ -31,6 +31,7 @@ public strictfp class RobotPlayer {
     // a set of map locations with enemy enlightment centers
     static Set<MapLocation> enemyEnlightmentCenters = new HashSet<>();
 
+
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
             RobotType.SLANDERER,
@@ -96,6 +97,7 @@ public strictfp class RobotPlayer {
             }
         }
     }
+
 
     static void runEnlightenmentCenter() throws GameActionException {
         RobotType toBuild = randomSpawnableRobotType();
