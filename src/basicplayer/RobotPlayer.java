@@ -2,6 +2,7 @@ package basicplayer;
 import battlecode.common.*;
 import javafx.util.Pair;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -10,25 +11,25 @@ public strictfp class RobotPlayer {
     static RobotController rc;
 
     // a dictionary mapping a map location to it's passability
-    static Map<MapLocation, Double> passabilities;
+    static Map<MapLocation, Double> passabilities = new HashMap<>();
 
     // a set of MapLocations with detected but unknown bots
-    static Set<MapLocation> detectedBots;
+    static Set<MapLocation> detectedBots = new HashSet<>();
 
     // a set of map locations with known muckrakers
-    static Set<MapLocation> enemyMuckRaker;
+    static Set<MapLocation> enemyMuckRaker = new HashSet<>();
 
     // a set of map locations with known slanderers
-    static Set<MapLocation> confirmedSlanderers;
+    static Set<MapLocation> confirmedSlanderers = new HashSet<>();
 
     // a set of map locations of politicians or potentially slanderers
-    static Set<MapLocation> enemyPoliticians;
+    static Set<MapLocation> enemyPoliticians = new HashSet<>();
 
     // a set of map locations with neutral enlightment centers
-    static Set<MapLocation> neutralEnlightmentCenters;
+    static Set<MapLocation> neutralEnlightmentCenters = new HashSet<>();
 
     // a set of map locations with enemy enlightment centers
-    static Set<MapLocation> enemyEnlightmentCenters;
+    static Set<MapLocation> enemyEnlightmentCenters = new HashSet<>();
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
