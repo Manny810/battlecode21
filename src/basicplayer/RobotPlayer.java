@@ -178,13 +178,18 @@ public strictfp class RobotPlayer {
     }
 
     static Set<MapLocation> getSensedSquares() throws GameActionException {
-        Set<MapLocation> newRobots = new HashSet<>();
+        Set<MapLocation> newDetectedBots = new HashSet<>();
+        Set<MapLocation> newNeutralEnlightmentCenters = new HashSet<>();
+        Set<MapLocation> newEnemyEnlightmentCenters = new HashSet<>();
+        Set<MapLocation> newEnemyMuckRaker = new HashSet<>();
+        Set<MapLocation> newConfirmedSlanderers = new HashSet<>();
+        Set<MapLocation> newEnemyPoliticians = new HashSet<>();
+
         // detect robots
         MapLocation[] curDetectedRobots = rc.detectNearbyRobots();
 
         for (MapLocation robotLocation: curDetectedRobots){
-            detectedBots.add(robotLocation);
-            newRobots.add(robotLocation);
+            newDetectedBots.add(robotLocation);
         }
 
         // sense robots
@@ -196,30 +201,29 @@ public strictfp class RobotPlayer {
             MapLocation location = robot.getLocation();
 
             // NOTE: This could create an error if the location is not in detected. This should never happen because all robots that are sensed should have already been detected.
-            detectedBots.remove(location);
+            newDetectedBots.remove(location);
 
             // if we saw a neutral piece -> neutral Enlightment Center
             if (team == Team.NEUTRAL){
-                neutralEnlightmentCenters.add(location);
+                newNeutralEnlightmentCenters.add(location);
             }
             // if the robot is an enemy
             else if (!rc.getTeam().equals(team)){
                 switch(type){
-                    case ENLIGHTENMENT_CENTER: enemyEnlightmentCenters.add(location); break;
-                    case MUCKRAKER: enemyMuckRaker.add(location); break;
-                    case SLANDERER: confirmedSlanderers.add(location); break;
-                    case POLITICIAN: enemyPoliticians.add(location); break;
+                    case ENLIGHTENMENT_CENTER: newEnemyEnlightmentCenters.add(location); break;
+                    case MUCKRAKER: newEnemyMuckRaker.add(location); break;
+                    case SLANDERER: newConfirmedSlanderers.add(location); break;
+                    case POLITICIAN: newEnemyPoliticians.add(location); break;
                 }
-                /**
-                 static Set<MapLocation> enemyBots;
-                 static Set<MapLocation> enemyMuckRaker;
-                 static Set<MapLocation> confirmedSlanderers;
-                 static Set<MapLocation> enemyPoliticians;
-                 static Set<MapLocation> neutralEnlightmentCenters;
-                 static Set<MapLocation> enemyEnlightmentCenters;
-                 **/
+
             }
         }
+        detectedBots.addAll(newDetectedBots);
+        neutralEnlightmentCenters.addAll(newNeutralEnlightmentCenters);
+        enemyEnlightmentCenters.addAll(newEnemyEnlightmentCenters);
+        enemyMuckRaker.addAll(newEnemyMuckRaker);
+        confirmedSlanderers.addAll(newConfirmedSlanderers);
+        enemyPoliticians.addAll(newEnemyPoliticians);
 
         // sense passabilities
         MapLocation curLocation = rc.getLocation();
@@ -228,6 +232,14 @@ public strictfp class RobotPlayer {
         curLocation.translate(-radiusSquared, -radiusSquared);
         for (int x = 0; x <= 2*radiusSquared; x++){
             for (int y = 0; y <= 2*radiusSquared; y++){
+                // Check all sets of robots to erase any information that is no longer valid
+                if (detectedBots.contains(curLocation) && !newDetectedBots.contains(curLocation)) detectedBots.remove(curLocation);
+                if (neutralEnlightmentCenters.contains(curLocation) && !newNeutralEnlightmentCenters.contains(curLocation)) neutralEnlightmentCenters.remove(curLocation);
+                if (enemyEnlightmentCenters.contains(curLocation) && !newEnemyEnlightmentCenters.contains(curLocation)) enemyEnlightmentCenters.remove(curLocation);
+                if (enemyMuckRaker.contains(curLocation) && !newEnemyMuckRaker.contains(curLocation)) enemyMuckRaker.remove(curLocation);
+                if (confirmedSlanderers.contains(curLocation) && !newConfirmedSlanderers.contains(curLocation)) confirmedSlanderers.remove(curLocation);
+                if (enemyPoliticians.contains(curLocation) && !newEnemyPoliticians.contains(curLocation)) enemyPoliticians.remove(curLocation);
+
                 // if passability has not been sensed, add that value to the map
                 if (rc.canSenseLocation(curLocation)){
                     if (!passabilities.containsKey(curLocation)) {
