@@ -159,6 +159,7 @@ public strictfp class RobotPlayer {
                     MapLocation currentLocation = rc.getLocation();
                     if (oldPositionOnTargetLine.distanceSquaredTo(targetLocation) < currentLocation.distanceSquaredTo(targetLocation)) {
                         // Somehow keep moving
+                        rc.move(bugDirection);
                     } else {
                         rc.move(d);
                         oldPositionOnTargetLine = rc.getLocation();
