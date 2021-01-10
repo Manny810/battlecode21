@@ -9,7 +9,26 @@ import java.util.Set;
 public strictfp class RobotPlayer {
     static RobotController rc;
 
+    // a dictionary mapping a map location to it's passability
     static Map<MapLocation, Double> passabilities;
+
+    // a set of MapLocations with detected but unknown bots
+    static Set<MapLocation> detectedBots;
+
+    // a set of map locations with known muckrakers
+    static Set<MapLocation> enemyMuckRaker;
+
+    // a set of map locations with known slanderers
+    static Set<MapLocation> confirmedSlanderers;
+
+    // a set of map locations of politicians or potentially slanderers
+    static Set<MapLocation> enemyPoliticians;
+
+    // a set of map locations with neutral enlightment centers
+    static Set<MapLocation> neutralEnlightmentCenters;
+
+    // a set of map locations with enemy enlightment centers
+    static Set<MapLocation> enemyEnlightmentCenters;
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
@@ -159,22 +178,71 @@ public strictfp class RobotPlayer {
     }
 
     static Set<MapLocation> getSensedSquares() throws GameActionException {
+        Set<MapLocation> newRobots = new HashSet<>();
+        // detect robots
+        MapLocation[] curDetectedRobots = rc.detectNearbyRobots();
+
+        for (MapLocation robotLocation: curDetectedRobots){
+            detectedBots.add(robotLocation);
+            newRobots.add(robotLocation);
+        }
+
+        // sense robots
+        RobotInfo[] robots = rc.senseNearbyRobots();
+        for (RobotInfo robot: robots){
+            int id = robot.getID();
+            RobotType type = robot.getType();
+            Team team = robot.getTeam();
+            MapLocation location = robot.getLocation();
+
+            // NOTE: This could create an error if the location is not in detected. This should never happen because all robots that are sensed should have already been detected.
+            detectedBots.remove(location);
+
+            // if we saw a neutral piece -> neutral Enlightment Center
+            if (team == Team.NEUTRAL){
+                neutralEnlightmentCenters.add(location);
+            }
+            // if the robot is an enemy
+            else if (!rc.getTeam().equals(team)){
+                switch(type){
+                    case ENLIGHTENMENT_CENTER: enemyEnlightmentCenters.add(location); break;
+                    case MUCKRAKER: enemyMuckRaker.add(location); break;
+                    case SLANDERER: confirmedSlanderers.add(location); break;
+                    case POLITICIAN: enemyPoliticians.add(location); break;
+                }
+                /**
+                 static Set<MapLocation> enemyBots;
+                 static Set<MapLocation> enemyMuckRaker;
+                 static Set<MapLocation> confirmedSlanderers;
+                 static Set<MapLocation> enemyPoliticians;
+                 static Set<MapLocation> neutralEnlightmentCenters;
+                 static Set<MapLocation> enemyEnlightmentCenters;
+                 **/
+            }
+        }
+
+        // sense passabilities
         MapLocation curLocation = rc.getLocation();
         int radiusSquared = getSenseRadiusSquared();
         Set<MapLocation> sensedSquares = new HashSet<>();
         curLocation.translate(-radiusSquared, -radiusSquared);
         for (int x = 0; x <= 2*radiusSquared; x++){
             for (int y = 0; y <= 2*radiusSquared; y++){
-                if (!passabilities.containsKey(curLocation)){
-                    if (rc.canSenseLocation(curLocation)) {
+                // if passability has not been sensed, add that value to the map
+                if (rc.canSenseLocation(curLocation)){
+                    if (!passabilities.containsKey(curLocation)) {
                         double passability = rc.sensePassability(curLocation);
                         passabilities.put(curLocation, passability);
                     }
                 }
+
+                // check to see if spaces we though robots were in are no longer there
+
                 curLocation.translate(1,0);
             }
             curLocation.translate(-2*radiusSquared, 1);
         }
+
         return sensedSquares;
     }
 
