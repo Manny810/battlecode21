@@ -269,11 +269,62 @@ public strictfp class RobotPlayer {
         return null;
     }
 
+//    static Set<MapLocation> getLine (MapLocation currentLocation, MapLocation targetLocation) {
+//        final int currentX = currentLocation.x; final int currentY = currentLocation.y;
+//        final int targetX = targetLocation.x; final int targetY = targetLocation.y;
+//        final HashSet<MapLocation> coordinatesOnLine = new HashSet<>();
+//        // Vertical line
+//        if (currentX == targetX) {
+//            range = Math.abs(targetY - currentY);
+//            if (currentY < targetY) { // path goes downward
+//                for (int i = 0; i <= range; i++) {
+//                    coordinatesOnLine.add(new MapLocation(currentX, currentY + i));
+//                }
+//            } else if (currentY > targetY) { // path goes upward
+//                for (int i = 0; i <= range; i++) {
+//                    coordinatesOnLine.add(new MapLocation(currentX, currentY - i));
+//                }
+//            }
+//        }
+//
+//        // Horizontal line
+//        else if (currentY == targetY) {
+//            range = Math.abs(targetX - currentX);
+//            if (currentX < targetX) { // path goes to the right
+//                for (int i = 0; i <= range; i++) {
+//                    coordinatesOnLine.add(new MapLoctation(currentX + i, currentY));
+//                }
+//            } else if (currentX > targetX) { // path goes to the left
+//                for (int i = 0; i <= range; i++) {
+//                    coordinatesOnLine.add(new MapLocation(currentX - i, currentY));
+//                }
+//            }
+//        }
+//
+//        else if (currentX != targetX && currentY != targetY) {
+//            final double slopeOfLine = (double) (targetY - currentY) / (targetX - currentX);
+//
+//
+//        }
+//        int slopeOfLine =
+//        return coordinatesOnLine;
+//    }
+//
+//
+//    static boolean checkIntersection(HashSet<MapLocation> originalLine, HashSet<MapLocation> currentLine) {
+//
+//    }
+
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
     private static MapLocation oldPositionOnTargetLine = null;
 
+
+
+
     static void basicBugStraightLine(MapLocation targetLocation) throws GameActionException {
+        MapLocation startingLocation = rc.getLocation();
+        boolean tracingObstacle = false;
         while (true) {
             Direction d = rc.getLocation().directionTo(targetLocation);
             System.out.println("Direction to target" + d);
@@ -283,23 +334,38 @@ public strictfp class RobotPlayer {
             if (rc.getLocation().equals(targetLocation)) {
                 System.out.println("I have reached the target location");
                 // perform some action based on the unit
-            } else if (rc.isReady()) { // Moving towards targetLocation
-                if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
-                    MapLocation currentLocation = rc.getLocation();
-//                    if (oldPositionOnTargetLine.distanceSquaredTo(targetLocation) < currentLocation.distanceSquaredTo(targetLocation)) {
-//                        // Somehow keep moving
-//                        rc.move(bugDirection);
-//                    } else {
-                        rc.move(d);
-                    System.out.println("Moved in direction of" + d);
+            } else if (rc.isReady()) { // Moving on the line  towards targetLocation
+                if (tracingObstacle) {
+                    System.out.println("Now tracing obstacle");
+                    for (int i = 0; i < 8; i++) {
+                        if (rc.canMove(bugDirection) &&
+                                rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold &&
+                                rc.sensePassability(rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft())) < passabilityThreshold) { // Check if there's obstacle to left while tracing
+                            System.out.println("Will turn towards " + bugDirection);
+                            System.out.println("Obstacle should be on this direction " + bugDirection.rotateLeft().rotateLeft());
+                            System.out.println("Obstacle coord: " + rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft()));
+                            System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
+                            if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection))) {
+                                tracingObstacle = false;
+                            }
+                            rc.move(bugDirection);
+                            break;
+                        }
+                        bugDirection = bugDirection.rotateRight();
+                    }
+                }
+                else if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
+                    rc.move(d);
+                    System.out.println("Moved on the line towards target" + d);
                     oldPositionOnTargetLine = rc.getLocation();
-                        bugDirection = null;
-//                    }
-                } else { // Can't move towards targetLocation
+                    bugDirection = null;
+                }
+                else { // Can't move towards targetLocation
+                    tracingObstacle = true;
                     if (bugDirection == null) {
                         bugDirection = d.rotateRight();
+                        System.out.println("Cannot move towards target, rotating right");
                     }
-                    System.out.println("Hello");
                     for (int i = 0; i < 8; i++) {
                         System.out.println("bugDirection " + bugDirection + "Can move there "  + rc.canMove(bugDirection) + "Passability at that spot " + rc.sensePassability(rc.getLocation().add(bugDirection)));
                         if (rc.canMove(bugDirection) && rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold) {
