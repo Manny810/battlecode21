@@ -10,6 +10,9 @@ import java.util.Set;
 public strictfp class RobotPlayer {
     static RobotController rc;
 
+    // a dictionary mapping a robot's id to their enlightment center
+    static Map<Integer, Integer> enlightmentCenterIds = new HashMap<>();
+
     // a dictionary mapping a map location to it's passability
     static Map<MapLocation, Double> passabilities = new HashMap<>();
 
@@ -30,6 +33,7 @@ public strictfp class RobotPlayer {
 
     // a set of map locations with enemy enlightment centers
     static Set<MapLocation> enemyEnlightmentCenters = new HashSet<>();
+
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
