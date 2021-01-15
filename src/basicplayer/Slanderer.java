@@ -68,7 +68,7 @@ public class Slanderer {
         horizontalForce += cosine*ENLIGHTMENT_CENTER_EFFECT/distanceSquared;
         verticalForce += sine*ENLIGHTMENT_CENTER_EFFECT/distanceSquared;
 
-        
+
         if (RobotPlayer.tryMove(RobotPlayer.randomDirection()))
             System.out.println("I moved!");
     }
