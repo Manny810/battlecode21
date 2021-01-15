@@ -321,10 +321,6 @@ public strictfp class RobotPlayer {
 
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
-    private static MapLocation oldPositionOnTargetLine = null;
-
-
-
 
     static void basicBugStraightLine(MapLocation targetLocation) throws GameActionException {
         MapLocation startingLocation = rc.getLocation();
@@ -361,7 +357,6 @@ public strictfp class RobotPlayer {
                 else if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
                     rc.move(d);
                     System.out.println("Moved on the line towards target" + d);
-                    oldPositionOnTargetLine = rc.getLocation();
                     bugDirection = null;
                 }
                 else { // Can't move towards targetLocation
