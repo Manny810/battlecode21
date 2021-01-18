@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public class Muckraker extends Robot {
 
+    static final int MUCKRAKER_SENSOR_RADIUS_SQUARED = 30;
+
     public Muckraker(RobotController rc) throws GameActionException {
         super(rc);
     }
@@ -48,7 +50,10 @@ public class Muckraker extends Robot {
 
     }
 
+
+    @Override
     public void run() throws GameActionException {
+        getSensedSquares();
         Team enemy = rc.getTeam().opponent();
         int actionRadius = rc.getType().actionRadiusSquared;
         for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {
@@ -63,5 +68,10 @@ public class Muckraker extends Robot {
         }
         if (RobotPlayer.tryMove(RobotPlayer.randomDirection()))
             System.out.println("I moved!");
+    }
+
+    @Override
+    public int getSenseRadiusSquared() {
+        return MUCKRAKER_SENSOR_RADIUS_SQUARED;
     }
 }

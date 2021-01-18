@@ -15,6 +15,7 @@ public class Slanderer extends Robot {
 //            Direction.SOUTHEAST,
 //            Direction.NORTHWEST,
 //            Direction.SOUTHWEST));
+    static final int SLANDERER_SENSOR_RADIUS_SQUARED = 20;
 
     public Slanderer(RobotController rc) throws GameActionException {
         super(rc);
@@ -36,7 +37,7 @@ public class Slanderer extends Robot {
     private void positionAroundEC() throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
-        int originEnlightenmentCenterID = RobotPlayer.getEnlightenmentCenterIds().get(currentID);
+        int originEnlightenmentCenterID = enlightmentCenterId;
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
         MapLocation originECLocation = null;
         for (RobotInfo robot : nearbyRobots) {
@@ -81,7 +82,9 @@ public class Slanderer extends Robot {
         }
     }
 
+    @Override
     public void run() throws GameActionException {
+        getSensedSquares();
         positionAroundEC();
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
@@ -130,5 +133,10 @@ public class Slanderer extends Robot {
 //
 //        if (RobotPlayer.tryMove(RobotPlayer.randomDirection()))
 //            System.out.println("I moved!");
+    }
+
+    @Override
+    public int getSenseRadiusSquared() {
+        return SLANDERER_SENSOR_RADIUS_SQUARED;
     }
 }

@@ -2,13 +2,18 @@ package basicplayer;
 
 import battlecode.common.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static basicplayer.RobotPlayer.rc;
 
 public class Politician extends Robot {
 
+    static final int POLITICIAN_SENSOR_RADIUS_SQUARED = 25;
+
+    static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
 
     static final MapLocation testTarget = new MapLocation(25927, 25299);
     static final int POLITICIAN_ACTION_RADIUS = 9;
@@ -17,7 +22,9 @@ public class Politician extends Robot {
         super(rc);
     }
 
+    @Override
     public void run() throws GameActionException {
+        getSensedSquares();
         MapLocation enlightmentCenterTarget = getTarget();
 
         // If we have a target
@@ -30,11 +37,11 @@ public class Politician extends Robot {
                 RobotPlayer.basicBugStraightLine(enlightmentCenterTarget);
             }
         } else { // doesn't have a target and needs to get one
-            for (MapLocation neutralEC: RobotPlayer.neutralEnlightmentCenters){
-                if (!RobotPlayer.politicianAssignments.containsKey(neutralEC)){
+            for (MapLocation neutralEC: neutralEnlightmentCenters){
+                if (!politicianAssignments.containsKey(neutralEC)){
                     Set<Integer> set = new HashSet<>();
                     set.add(rc.getID());
-                    RobotPlayer.politicianAssignments.put(neutralEC, set);
+                    politicianAssignments.put(neutralEC, set);
                 }
             }
 
@@ -57,10 +64,15 @@ public class Politician extends Robot {
          **/
     }
 
+    @Override
+    public int getSenseRadiusSquared() {
+        return POLITICIAN_SENSOR_RADIUS_SQUARED;
+    }
+
     private MapLocation getTarget() {
         int id = rc.getID();
-        for (MapLocation neutralEc: RobotPlayer.politicianAssignments.keySet()){
-            if (RobotPlayer.politicianAssignments.get(neutralEc).contains(id)){
+        for (MapLocation neutralEc: politicianAssignments.keySet()){
+            if (politicianAssignments.get(neutralEc).contains(id)){
                 return neutralEc;
             }
         }
