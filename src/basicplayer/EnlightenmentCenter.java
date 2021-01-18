@@ -1,8 +1,12 @@
 package basicplayer;
 import battlecode.common.*;
 
+<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.Map;
+=======
+public class EnlightenmentCenter extends Robot {
+>>>>>>> 6e90646714e64a63f3d5070555200fbd63be1d89
 
 public class EnlightenmentCenter {
 
@@ -22,8 +26,19 @@ public class EnlightenmentCenter {
     static final int POLITICIAN_INFLUENCE = 50;
     static final int MUCKRAKER_INFLUENCE = 1;
 
+<<<<<<< HEAD
     static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
         int id = rc.getID();
+=======
+    static int counter = 0;
+
+    public EnlightenmentCenter(RobotController rc) throws GameActionException {
+        super(rc);
+    }
+
+    void run() throws GameActionException {
+        int id = this.rc.getID();
+>>>>>>> 6e90646714e64a63f3d5070555200fbd63be1d89
         if (!RobotPlayer.slandererCount.containsKey(id)){
             RobotPlayer.slandererCount.put(id, 0);
         }

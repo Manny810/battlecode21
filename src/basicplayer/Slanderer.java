@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Slanderer {
+public class Slanderer extends Robot {
 
     static final int MUCKRAKER_EFFECT = 20;
     static final int POLITICIAN_EFFECT = 10;
@@ -20,6 +20,9 @@ public class Slanderer {
 //            Direction.NORTHWEST,
 //            Direction.SOUTHWEST));
 
+    public Slanderer(RobotController rc) throws GameActionException {
+        super(rc);
+    }
 
 
     static double findCosine(MapLocation p1, MapLocation p2){
@@ -87,11 +90,16 @@ public class Slanderer {
         }
     }
 
+<<<<<<< HEAD
     static void runSlanderer(RobotController rc, HashMap<Integer, Integer> ecIDs) throws GameActionException {
         System.out.println(ecIDs);
 //        System.out.println(RobotPlayer.getEnlightenmentCenterIds());
         System.out.println("Not position yet");
 //        positionAroundEC(rc);
+=======
+    void run() throws GameActionException {
+        positionAroundEC(rc);
+>>>>>>> 6e90646714e64a63f3d5070555200fbd63be1d89
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
 //        MapLocation curLocation = rc.getLocation();

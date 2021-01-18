@@ -7,13 +7,17 @@ import java.util.Set;
 
 import static basicplayer.RobotPlayer.rc;
 
-public class Politician {
+public class Politician extends Robot {
+
 
     static final MapLocation testTarget = new MapLocation(25927, 25299);
     static final int POLITICIAN_ACTION_RADIUS = 9;
 
+    public Politician(RobotController rc) throws GameActionException {
+        super(rc);
+    }
 
-    static void runPolitician(RobotController rc) throws GameActionException {
+    void run() throws GameActionException {
         MapLocation enlightmentCenterTarget = getTarget();
 
         // If we have a target
@@ -53,7 +57,7 @@ public class Politician {
          **/
     }
 
-    private static MapLocation getTarget() {
+    private MapLocation getTarget() {
         int id = rc.getID();
         for (MapLocation neutralEc: RobotPlayer.politicianAssignments.keySet()){
             if (RobotPlayer.politicianAssignments.get(neutralEc).contains(id)){

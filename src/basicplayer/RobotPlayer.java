@@ -92,7 +92,23 @@ public strictfp class RobotPlayer {
         basicplayer.RobotPlayer.rc = rc;
 
         turnCount = 0;
-
+        Robot robot;
+        switch (rc.getType()) {
+            case ENLIGHTENMENT_CENTER:
+                robot = new EnlightenmentCenter(rc);
+                break;
+            case POLITICIAN:
+                robot = new Politician(rc);
+                break;
+            case SLANDERER:
+                robot = new Slanderer(rc);
+                break;
+            case MUCKRAKER:
+                robot = new Muckraker(rc); 
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + rc.getType());
+        }
         System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
             System.out.println(turnCount);
@@ -102,14 +118,7 @@ public strictfp class RobotPlayer {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
-                System.out.println(getEnlightenmentCenterIds());
-                switch (rc.getType()) {
-                    case ENLIGHTENMENT_CENTER: EnlightenmentCenter.runEnlightenmentCenter(rc); break;
-                    case POLITICIAN:           Politician.runPolitician(rc);          break;
-                    case SLANDERER:            Slanderer.runSlanderer(rc, getEnlightenmentCenterIds());           break;
-                    case MUCKRAKER:            Muckraker.runMuckraker(rc);           break;
-                }
-
+                robot.run();
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
 
@@ -245,51 +254,6 @@ public strictfp class RobotPlayer {
         return null;
     }
 
-//    static Set<MapLocation> getLine (MapLocation currentLocation, MapLocation targetLocation) {
-//        final int currentX = currentLocation.x; final int currentY = currentLocation.y;
-//        final int targetX = targetLocation.x; final int targetY = targetLocation.y;
-//        final HashSet<MapLocation> coordinatesOnLine = new HashSet<>();
-//        // Vertical line
-//        if (currentX == targetX) {
-//            range = Math.abs(targetY - currentY);
-//            if (currentY < targetY) { // path goes downward
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLocation(currentX, currentY + i));
-//                }
-//            } else if (currentY > targetY) { // path goes upward
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLocation(currentX, currentY - i));
-//                }
-//            }
-//        }
-//
-//        // Horizontal line
-//        else if (currentY == targetY) {
-//            range = Math.abs(targetX - currentX);
-//            if (currentX < targetX) { // path goes to the right
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLoctation(currentX + i, currentY));
-//                }
-//            } else if (currentX > targetX) { // path goes to the left
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLocation(currentX - i, currentY));
-//                }
-//            }
-//        }
-//
-//        else if (currentX != targetX && currentY != targetY) {
-//            final double slopeOfLine = (double) (targetY - currentY) / (targetX - currentX);
-//
-//
-//        }
-//        int slopeOfLine =
-//        return coordinatesOnLine;
-//    }
-//
-//
-//    static boolean checkIntersection(HashSet<MapLocation> originalLine, HashSet<MapLocation> currentLine) {
-//
-//    }
 
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
