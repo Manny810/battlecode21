@@ -63,7 +63,7 @@ public class Slanderer {
                         rc.move(slandererDirection);
                     }
                 }
-                
+
                 // if ID is even, go on CCW branch, otherwise go on CW branch
                 Direction branchDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[slandererDirection.ordinal()-1] : RobotPlayer.directions[slandererDirection.ordinal()+1] ;
                 slandererDirection = branchDirection;
