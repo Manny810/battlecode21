@@ -4,9 +4,10 @@ import battlecode.common.*;
 
 public class Politician {
 
-    static final MapLocation testTarget = new MapLocation(24479, 19048);
+    static final MapLocation testTarget = new MapLocation(25927, 25299);
     static final MapLocation enlightmentCenterTarget = null;
     static final int POLITICIAN_ACTION_RADIUS = 9;
+
 
     static void runPolitician(RobotController rc) throws GameActionException {
         // If we have a target

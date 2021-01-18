@@ -76,7 +76,7 @@ public strictfp class RobotPlayer {
     public static void run(RobotController rc) throws GameActionException {
 
         // update passabilities field with what the robot sees
-        getSensedSquares();
+//        getSensedSquares();
 
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
@@ -282,10 +282,6 @@ public strictfp class RobotPlayer {
 
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
-    private static MapLocation oldPositionOnTargetLine = null;
-
-
-
 
     static void basicBugStraightLine(MapLocation targetLocation) throws GameActionException {
         MapLocation startingLocation = rc.getLocation();
@@ -293,9 +289,6 @@ public strictfp class RobotPlayer {
         while (true) {
             Direction d = rc.getLocation().directionTo(targetLocation);
             System.out.println("Direction to target" + d);
-            if (oldPositionOnTargetLine == null) { // Record initial location
-                oldPositionOnTargetLine = rc.getLocation();
-            }
             if (rc.getLocation().equals(targetLocation)) {
                 System.out.println("I have reached the target location");
                 // perform some action based on the unit
@@ -312,17 +305,18 @@ public strictfp class RobotPlayer {
                             System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
                             if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection))) {
                                 tracingObstacle = false;
+                                startingLocation = rc.getLocation();
                             }
                             rc.move(bugDirection);
                             break;
                         }
                         bugDirection = bugDirection.rotateRight();
                     }
+                    bugDirection.rotateLeft();
                 }
                 else if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
                     rc.move(d);
                     System.out.println("Moved on the line towards target" + d);
-                    oldPositionOnTargetLine = rc.getLocation();
                     bugDirection = null;
                 }
                 else { // Can't move towards targetLocation
@@ -339,6 +333,7 @@ public strictfp class RobotPlayer {
                         }
                         bugDirection = bugDirection.rotateRight();
                     }
+                    bugDirection = bugDirection.rotateLeft();
                 }
                 Clock.yield();
             }
