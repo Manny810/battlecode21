@@ -70,16 +70,7 @@ public class EnlightenmentCenter extends Robot {
                 } else {
                     politicianCount++;
                 }
-
-                // get the robot's id that you just built and register it in enlightmentCenterIds
-                MapLocation newLocation = rc.adjacentLocation(dir);
-                RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
-                for (RobotInfo robot : nearbyRobots){
-                    if (robot.getLocation().equals(newLocation)){
-                        RobotPlayer.updateEnlightenmentCenterIds(robot.ID, id);
-                    }
-
-                }
+                
             } else {
                 break;
             }

@@ -10,9 +10,6 @@ import java.util.Set;
 public strictfp class RobotPlayer {
     static RobotController rc;
 
-    // a dictionary mapping a robot's id to their enlightment center
-    public static Map<Integer, Integer> enlightmentCenterIds = new HashMap<>();
-
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
@@ -36,15 +33,7 @@ public strictfp class RobotPlayer {
 
     static int turnCount;
 
-    public static HashMap<Integer, Integer> getEnlightenmentCenterIds() {
-        System.out.println("Getting the ECIDs" + enlightmentCenterIds);
-        return new HashMap<>(enlightmentCenterIds);
-    }
 
-    public static void updateEnlightenmentCenterIds (int spawnedRobotID, int enlightenmentCenterID){
-        enlightmentCenterIds.put(spawnedRobotID, enlightenmentCenterID);
-        System.out.println("Updating " + enlightmentCenterIds);
-    }
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
      * If this method returns, the robot dies!
