@@ -41,10 +41,10 @@ public class EnlightenmentCenter {
 
         RobotType toBuild;
         int influence;
-        if (slanderer/total < SLANDERER_RATIO/TOTAL_RATIO){
+        if (slanderer/total <= SLANDERER_RATIO/TOTAL_RATIO){
             toBuild = RobotType.SLANDERER;
             influence = SLANDERER_INFLUENCE;
-        } else if (muckraker/total < MUCKRAKER_RATIO/TOTAL_RATIO){
+        } else if (muckraker/total <= MUCKRAKER_RATIO/TOTAL_RATIO){
             toBuild = RobotType.MUCKRAKER;
             influence = MUCKRAKER_INFLUENCE;
         } else {
