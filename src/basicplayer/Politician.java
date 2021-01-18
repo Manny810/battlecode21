@@ -2,15 +2,19 @@ package basicplayer;
 
 import battlecode.common.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Politician {
 
     static final MapLocation testTarget = new MapLocation(25927, 25299);
-    static final MapLocation enlightmentCenterTarget = null;
     static final int POLITICIAN_ACTION_RADIUS = 9;
 
 
     static void runPolitician(RobotController rc) throws GameActionException {
+        MapLocation enlightmentCenterTarget = null;
         // If we have a target
+        /**
         if (enlightmentCenterTarget != null){
             int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
             if (rc.canEmpower(distance)){ // if it can empower the neutral ec
@@ -20,10 +24,19 @@ public class Politician {
                 RobotPlayer.basicBugStraightLine(enlightmentCenterTarget);
             }
         } else { // doesn't have a target and needs to get one
-            
+            for (MapLocation neutralEC: RobotPlayer.neutralEnlightmentCenters){
+                if (RobotPlayer.politicianAssignments.containsKey(neutralEC)){
+
+                } else {
+                    Set<Integer> set = new HashSet<>();
+                    set.add(rc.getID());
+                    RobotPlayer.politicianAssignments.put(neutralEC, set);
+                    enlightmentCenterTarget = neutralEC;
+                }
+            }
 
         }
-
+        **/
         RobotPlayer.basicBugStraightLine(testTarget);
 
         Team enemy = rc.getTeam().opponent();
@@ -37,6 +50,9 @@ public class Politician {
         }
         if (RobotPlayer.tryMove(RobotPlayer.randomDirection()))
             System.out.println("I moved!");
+    }
+
+    private void getTarget() {
     }
 
 }

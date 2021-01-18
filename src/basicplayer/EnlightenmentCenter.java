@@ -45,6 +45,14 @@ public class EnlightenmentCenter {
         for (Direction dir: directions) {
             if (rc.canBuildRobot(toBuild, dir, influence) && rc.getTeam().equals(Team.A) && counter == 0) {
                 rc.buildRobot(toBuild,dir, influence);
+                if (slanderer/total < SLANDERER_RATIO/TOTAL_RATIO){
+                    RobotPlayer.slandererCount.put(id, slanderer + 1);
+                } else if (muckraker/total < MUCKRAKER_RATIO/TOTAL_RATIO){
+                    RobotPlayer.muckrakerCount.put(id, muckraker + 1);
+                } else {
+                    RobotPlayer.politicianCount.put(id, politician + 1);
+                }
+
                 // get the robot's id that you just built and register it in enlightmentCenterIds
                 MapLocation newLocation = rc.adjacentLocation(dir);
                 RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
