@@ -37,6 +37,7 @@ public class EnlightenmentCenter {
         int politician = RobotPlayer.politicianCount.get(id);
         int muckraker = RobotPlayer.muckrakerCount.get(id);
 
+
         int total = slanderer + politician + muckraker + 1;
 
         RobotType toBuild;
