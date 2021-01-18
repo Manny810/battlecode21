@@ -4,7 +4,6 @@ import battlecode.common.*;
 public class Muckraker {
 
     static void exploreRadiallyOutward(RobotController rc) throws GameActionException {
-
     }
 
     static void runMuckraker(RobotController rc) throws GameActionException {

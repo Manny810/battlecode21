@@ -1,8 +1,10 @@
 package basicplayer;
 import battlecode.common.*;
 
-public class EnlightenmentCenter {
+import java.util.HashMap;
+import java.util.Map;
 
+public class EnlightenmentCenter {
 
     static final Direction[] directions = RobotPlayer.directions;
     static final RobotType[] spawnableRobot = {
@@ -68,8 +70,12 @@ public class EnlightenmentCenter {
                 RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
                 for (RobotInfo robot : nearbyRobots){
                     if (robot.getLocation().equals(newLocation)){
-                        RobotPlayer.enlightmentCenterIds.put(id, rc.getID());
+                        RobotPlayer.updateEnlightenmentCenterIds(robot.ID, id);
+//                        RobotPlayer.enlightmentCenterIds.put(robot.ID, id);
+//                        System.out.println("Adding robot" + robot.ID);
+//                        System.out.println(RobotPlayer.enlightmentCenterIds);
                     }
+
                 }
             } else {
                 break;

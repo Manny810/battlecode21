@@ -4,6 +4,7 @@ import com.sun.tools.javac.util.List;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -14,10 +15,10 @@ public class Slanderer {
     static final int CONFIRMED_SLANDERER_EFFECT = 5;
     static final int ENEMY_ENLIGHTMENT_CENTER_EFFECT = 5;
     static final int ENLIGHTMENT_CENTER_EFFECT = 1;
-    static final ArrayList<Direction> diagonalDirections =new ArrayList<>(List.of(Direction.NORTHEAST,
-            Direction.SOUTHEAST,
-            Direction.NORTHWEST,
-            Direction.SOUTHWEST));
+//    static final ArrayList<Direction> diagonalDirections =new ArrayList<>(List.of(Direction.NORTHEAST,
+//            Direction.SOUTHEAST,
+//            Direction.NORTHWEST,
+//            Direction.SOUTHWEST));
 
 
 
@@ -36,15 +37,20 @@ public class Slanderer {
     static void positionAroundEC(RobotController rc) throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
-        int originEnlightenmentCenterID = RobotPlayer.enlightmentCenterIds.get(currentID);
+//        System.out.println(currentID);
+//        System.out.println(RobotPlayer.enlightmentCenterIds);
+        int originEnlightenmentCenterID = RobotPlayer.getEnlightenmentCenterIds().get(currentID);
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
+        System.out.println(nearbyRobots);
         MapLocation originECLocation = null;
         for (RobotInfo robot : nearbyRobots) {
             if (robot.ID == originEnlightenmentCenterID) {
                 originECLocation = robot.location;
             }
         }
+        System.out.println("------------------------------------");
         Direction slandererDirection = rc.getLocation().directionTo(originECLocation).opposite();
+        System.out.println(slandererDirection);
 
         // Edge cases after being spawned from EC -- move directly north or south from spawn OR move away from EC
         if ((slandererDirection == Direction.NORTHEAST || slandererDirection == Direction.NORTHWEST) && rc.canMove(Direction.NORTH)) {
@@ -57,7 +63,7 @@ public class Slanderer {
         }
 
         while (true) {
-            if (!diagonalDirections.contains(slandererDirection)) { // On highway path
+            if (!(slandererDirection == Direction.NORTHEAST || slandererDirection == Direction.NORTHWEST || slandererDirection == Direction.SOUTHEAST || slandererDirection == Direction.SOUTHWEST )) { // On highway path
                 for (int i = 0; i < 2; i++) { //Coded to move only to first exit of highway
                     if (rc.canMove(slandererDirection)) {
                         rc.move(slandererDirection);
@@ -81,8 +87,11 @@ public class Slanderer {
         }
     }
 
-    static void runSlanderer(RobotController rc) throws GameActionException {
-        positionAroundEC(rc);
+    static void runSlanderer(RobotController rc, HashMap<Integer, Integer> ecIDs) throws GameActionException {
+        System.out.println(ecIDs);
+//        System.out.println(RobotPlayer.getEnlightenmentCenterIds());
+        System.out.println("Not position yet");
+//        positionAroundEC(rc);
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
 //        MapLocation curLocation = rc.getLocation();

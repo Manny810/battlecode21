@@ -11,7 +11,7 @@ public strictfp class RobotPlayer {
     static RobotController rc;
 
     // a dictionary mapping a robot's id to their enlightment center
-    static Map<Integer, Integer> enlightmentCenterIds = new HashMap<>();
+    public static Map<Integer, Integer> enlightmentCenterIds = new HashMap<>();
 
     // a dictionary mapping a map location to it's passability
     static Map<MapLocation, Double> passabilities = new HashMap<>();
@@ -68,6 +68,15 @@ public strictfp class RobotPlayer {
 
     static int turnCount;
 
+    public static HashMap<Integer, Integer> getEnlightenmentCenterIds() {
+        System.out.println("Getting the ECIDs" + enlightmentCenterIds);
+        return new HashMap<>(enlightmentCenterIds);
+    }
+
+    public static void updateEnlightenmentCenterIds (int spawnedRobotID, int enlightenmentCenterID){
+        enlightmentCenterIds.put(spawnedRobotID, enlightenmentCenterID);
+        System.out.println("Updating " + enlightmentCenterIds);
+    }
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
      * If this method returns, the robot dies!
@@ -86,16 +95,18 @@ public strictfp class RobotPlayer {
 
         System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
+            System.out.println(turnCount);
             turnCount += 1;
             // Try/catch blocks stop unhandled exceptions, which cause your robot to freeze
             try {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
+                System.out.println(getEnlightenmentCenterIds());
                 switch (rc.getType()) {
                     case ENLIGHTENMENT_CENTER: EnlightenmentCenter.runEnlightenmentCenter(rc); break;
                     case POLITICIAN:           Politician.runPolitician(rc);          break;
-                    case SLANDERER:            Slanderer.runSlanderer(rc);           break;
+                    case SLANDERER:            Slanderer.runSlanderer(rc, getEnlightenmentCenterIds());           break;
                     case MUCKRAKER:            Muckraker.runMuckraker(rc);           break;
                 }
 
