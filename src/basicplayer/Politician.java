@@ -12,7 +12,7 @@ import static basicplayer.RobotPlayer.rc;
 public class Politician extends Robot {
 
     static final int POLITICIAN_SENSOR_RADIUS_SQUARED = 25;
-
+    boolean start;
     static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
 
     static final MapLocation testTarget = new MapLocation(25927, 25299);
@@ -20,6 +20,7 @@ public class Politician extends Robot {
 
     public Politician(RobotController rc) throws GameActionException {
         super(rc);
+        start = true;
     }
 
     @Override
@@ -28,7 +29,18 @@ public class Politician extends Robot {
         MapLocation enlightmentCenterTarget = getTarget();
 
         // If we have a target
-        if (enlightmentCenterTarget != null){
+        if (start){
+            RobotInfo[] nearbyRobots = rc.senseNearbyRobots(8);
+            for (RobotInfo robot: nearbyRobots){
+                if (robot.getID() == enlightmentCenterId){
+                    Direction direction = rc.getLocation().directionTo(robot.getLocation()).opposite();
+                    if (rc.canMove(direction)){
+                        rc.move(direction); 
+                    }
+                }
+            }
+
+        } else if (enlightmentCenterTarget != null){
             int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
             if (rc.canEmpower(distance)){ // if it can empower the neutral ec
                 rc.empower(distance);
