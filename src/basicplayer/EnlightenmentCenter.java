@@ -20,7 +20,6 @@ public class EnlightenmentCenter {
     static final int POLITICIAN_INFLUENCE = 50;
     static final int MUCKRAKER_INFLUENCE = 1;
 
-    static int counter = 0;
     static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
         int id = rc.getID();
         if (!RobotPlayer.slandererCount.containsKey(id)){
@@ -54,7 +53,7 @@ public class EnlightenmentCenter {
         }
 
         for (Direction dir: directions) {
-            if (rc.canBuildRobot(toBuild, dir, influence) && rc.getTeam().equals(Team.A) && counter == 0) {
+            if (rc.canBuildRobot(toBuild, dir, influence)) {
                 rc.buildRobot(toBuild,dir, influence);
                 if (slanderer/total < SLANDERER_RATIO/TOTAL_RATIO){
                     RobotPlayer.slandererCount.put(id, slanderer + 1);
@@ -72,7 +71,6 @@ public class EnlightenmentCenter {
                         RobotPlayer.enlightmentCenterIds.put(id, rc.getID());
                     }
                 }
-                counter++;
             } else {
                 break;
             }
