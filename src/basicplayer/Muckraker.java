@@ -1,13 +1,17 @@
 package basicplayer;
 import battlecode.common.*;
 
-public class Muckraker {
+public class Muckraker extends Robot {
+
+    public Muckraker(RobotController rc) throws GameActionException {
+        super(rc);
+    }
 
     static void exploreRadiallyOutward(RobotController rc) throws GameActionException {
 
     }
 
-    static void runMuckraker(RobotController rc) throws GameActionException {
+    void run() throws GameActionException {
         Team enemy = rc.getTeam().opponent();
         int actionRadius = rc.getType().actionRadiusSquared;
         for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {

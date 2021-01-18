@@ -1,7 +1,7 @@
 package basicplayer;
 import battlecode.common.*;
 
-public class EnlightenmentCenter {
+public class EnlightenmentCenter extends Robot {
 
 
     static final Direction[] directions = RobotPlayer.directions;
@@ -21,8 +21,13 @@ public class EnlightenmentCenter {
     static final int MUCKRAKER_INFLUENCE = 1;
 
     static int counter = 0;
-    static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
-        int id = rc.getID();
+
+    public EnlightenmentCenter(RobotController rc) throws GameActionException {
+        super(rc);
+    }
+
+    void run() throws GameActionException {
+        int id = this.rc.getID();
         if (!RobotPlayer.slandererCount.containsKey(id)){
             RobotPlayer.slandererCount.put(id, 0);
         }

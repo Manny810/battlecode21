@@ -83,7 +83,23 @@ public strictfp class RobotPlayer {
         basicplayer.RobotPlayer.rc = rc;
 
         turnCount = 0;
-
+        Robot robot;
+        switch (rc.getType()) {
+            case ENLIGHTENMENT_CENTER:
+                robot = new EnlightenmentCenter(rc);
+                break;
+            case POLITICIAN:
+                robot = new Politician(rc);
+                break;
+            case SLANDERER:
+                robot = new Slanderer(rc);
+                break;
+            case MUCKRAKER:
+                robot = new Muckraker(rc); 
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + rc.getType());
+        }
         System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
             turnCount += 1;
@@ -92,12 +108,7 @@ public strictfp class RobotPlayer {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
-                switch (rc.getType()) {
-                    case ENLIGHTENMENT_CENTER: EnlightenmentCenter.runEnlightenmentCenter(rc); break;
-                    case POLITICIAN:           Politician.runPolitician(rc);          break;
-                    case SLANDERER:            Slanderer.runSlanderer(rc);           break;
-                    case MUCKRAKER:            Muckraker.runMuckraker(rc);           break;
-                }
+                robot.run();
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();

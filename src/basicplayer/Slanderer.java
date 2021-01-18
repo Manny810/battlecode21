@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 
-public class Slanderer {
+public class Slanderer extends Robot {
 
     static final int MUCKRAKER_EFFECT = 20;
     static final int POLITICIAN_EFFECT = 10;
@@ -19,6 +19,9 @@ public class Slanderer {
             Direction.NORTHWEST,
             Direction.SOUTHWEST));
 
+    public Slanderer(RobotController rc) throws GameActionException {
+        super(rc);
+    }
 
 
     static double findCosine(MapLocation p1, MapLocation p2){
@@ -81,7 +84,7 @@ public class Slanderer {
         }
     }
 
-    static void runSlanderer(RobotController rc) throws GameActionException {
+    void run() throws GameActionException {
         positionAroundEC(rc);
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
