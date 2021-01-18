@@ -5,6 +5,9 @@ import java.util.Map;
 
 
 public class EnlightenmentCenter extends Robot {
+
+    static final int ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED = 40;
+
     static final Direction[] directions = RobotPlayer.directions;
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
@@ -21,37 +24,35 @@ public class EnlightenmentCenter extends Robot {
     static final int POLITICIAN_INFLUENCE = 50;
     static final int MUCKRAKER_INFLUENCE = 1;
 
+    int slandererCount = 0;
+    int politicianCount = 0;
+    int muckrakerCount = 0;
+
     static int counter = 0;
 
     public EnlightenmentCenter(RobotController rc) throws GameActionException {
         super(rc);
     }
 
+    @Override
+    public int getSenseRadiusSquared() {
+        return ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED;
+    }
+
+    @Override
     public void run() throws GameActionException {
+        getSensedSquares();
         int id = this.rc.getID();
-        if (!RobotPlayer.slandererCount.containsKey(id)){
-            RobotPlayer.slandererCount.put(id, 0);
-        }
-        if (!RobotPlayer.politicianCount.containsKey(id)){
-            RobotPlayer.politicianCount.put(id, 0);
-        }
-        if (!RobotPlayer.muckrakerCount.containsKey(id)){
-            RobotPlayer.muckrakerCount.put(id, 0);
-        }
-
-        int slanderer = RobotPlayer.slandererCount.get(id);
-        int politician = RobotPlayer.politicianCount.get(id);
-        int muckraker = RobotPlayer.muckrakerCount.get(id);
 
 
-        int total = slanderer + politician + muckraker + 1;
+        int total = slandererCount + politicianCount + muckrakerCount + 1;
 
         RobotType toBuild;
         int influence;
-        if (slanderer/total <= SLANDERER_RATIO/TOTAL_RATIO){
+        if (slandererCount/total <= SLANDERER_RATIO/TOTAL_RATIO){
             toBuild = RobotType.SLANDERER;
             influence = SLANDERER_INFLUENCE;
-        } else if (muckraker/total <= MUCKRAKER_RATIO/TOTAL_RATIO){
+        } else if (muckrakerCount/total <= MUCKRAKER_RATIO/TOTAL_RATIO){
             toBuild = RobotType.MUCKRAKER;
             influence = MUCKRAKER_INFLUENCE;
         } else {
@@ -62,12 +63,12 @@ public class EnlightenmentCenter extends Robot {
         for (Direction dir: directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 rc.buildRobot(toBuild,dir, influence);
-                if (slanderer/total < SLANDERER_RATIO/TOTAL_RATIO){
-                    RobotPlayer.slandererCount.put(id, slanderer + 1);
-                } else if (muckraker/total < MUCKRAKER_RATIO/TOTAL_RATIO){
-                    RobotPlayer.muckrakerCount.put(id, muckraker + 1);
+                if (slandererCount/total < SLANDERER_RATIO/TOTAL_RATIO){
+                    slandererCount++;
+                } else if (muckrakerCount/total < MUCKRAKER_RATIO/TOTAL_RATIO){
+                    muckrakerCount++;
                 } else {
-                    RobotPlayer.politicianCount.put(id, politician + 1);
+                    politicianCount++;
                 }
 
                 // get the robot's id that you just built and register it in enlightmentCenterIds
