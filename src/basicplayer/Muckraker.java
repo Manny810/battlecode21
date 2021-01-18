@@ -8,7 +8,6 @@ public class Muckraker extends Robot {
     }
 
     static void exploreRadiallyOutward(RobotController rc) throws GameActionException {
-
     }
 
     public void run() throws GameActionException {

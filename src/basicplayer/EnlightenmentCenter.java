@@ -1,9 +1,10 @@
 package basicplayer;
 import battlecode.common.*;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class EnlightenmentCenter extends Robot {
-
-
     static final Direction[] directions = RobotPlayer.directions;
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
@@ -59,7 +60,7 @@ public class EnlightenmentCenter extends Robot {
         }
 
         for (Direction dir: directions) {
-            if (rc.canBuildRobot(toBuild, dir, influence) && rc.getTeam().equals(Team.A) && counter == 0) {
+            if (rc.canBuildRobot(toBuild, dir, influence)) {
                 rc.buildRobot(toBuild,dir, influence);
                 if (slanderer/total < SLANDERER_RATIO/TOTAL_RATIO){
                     RobotPlayer.slandererCount.put(id, slanderer + 1);
@@ -74,17 +75,14 @@ public class EnlightenmentCenter extends Robot {
                 RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
                 for (RobotInfo robot : nearbyRobots){
                     if (robot.getLocation().equals(newLocation)){
-                        RobotPlayer.enlightmentCenterIds.put(id, rc.getID());
+                        RobotPlayer.updateEnlightenmentCenterIds(robot.ID, id);
                     }
+
                 }
-                counter++;
             } else {
                 break;
             }
         }
     }
 
-    static RobotType spawnRobot() {
-        return spawnableRobot[0];
-    }
 }

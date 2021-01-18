@@ -11,7 +11,7 @@ public strictfp class RobotPlayer {
     static RobotController rc;
 
     // a dictionary mapping a robot's id to their enlightment center
-    static Map<Integer, Integer> enlightmentCenterIds = new HashMap<>();
+    public static Map<Integer, Integer> enlightmentCenterIds = new HashMap<>();
 
     // a dictionary mapping a map location to it's passability
     static Map<MapLocation, Double> passabilities = new HashMap<>();
@@ -68,6 +68,15 @@ public strictfp class RobotPlayer {
 
     static int turnCount;
 
+    public static HashMap<Integer, Integer> getEnlightenmentCenterIds() {
+        System.out.println("Getting the ECIDs" + enlightmentCenterIds);
+        return new HashMap<>(enlightmentCenterIds);
+    }
+
+    public static void updateEnlightenmentCenterIds (int spawnedRobotID, int enlightenmentCenterID){
+        enlightmentCenterIds.put(spawnedRobotID, enlightenmentCenterID);
+        System.out.println("Updating " + enlightmentCenterIds);
+    }
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
      * If this method returns, the robot dies!
@@ -102,6 +111,7 @@ public strictfp class RobotPlayer {
         }
         System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
+            System.out.println(turnCount);
             turnCount += 1;
             // Try/catch blocks stop unhandled exceptions, which cause your robot to freeze
             try {
@@ -245,51 +255,6 @@ public strictfp class RobotPlayer {
         return null;
     }
 
-//    static Set<MapLocation> getLine (MapLocation currentLocation, MapLocation targetLocation) {
-//        final int currentX = currentLocation.x; final int currentY = currentLocation.y;
-//        final int targetX = targetLocation.x; final int targetY = targetLocation.y;
-//        final HashSet<MapLocation> coordinatesOnLine = new HashSet<>();
-//        // Vertical line
-//        if (currentX == targetX) {
-//            range = Math.abs(targetY - currentY);
-//            if (currentY < targetY) { // path goes downward
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLocation(currentX, currentY + i));
-//                }
-//            } else if (currentY > targetY) { // path goes upward
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLocation(currentX, currentY - i));
-//                }
-//            }
-//        }
-//
-//        // Horizontal line
-//        else if (currentY == targetY) {
-//            range = Math.abs(targetX - currentX);
-//            if (currentX < targetX) { // path goes to the right
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLoctation(currentX + i, currentY));
-//                }
-//            } else if (currentX > targetX) { // path goes to the left
-//                for (int i = 0; i <= range; i++) {
-//                    coordinatesOnLine.add(new MapLocation(currentX - i, currentY));
-//                }
-//            }
-//        }
-//
-//        else if (currentX != targetX && currentY != targetY) {
-//            final double slopeOfLine = (double) (targetY - currentY) / (targetX - currentX);
-//
-//
-//        }
-//        int slopeOfLine =
-//        return coordinatesOnLine;
-//    }
-//
-//
-//    static boolean checkIntersection(HashSet<MapLocation> originalLine, HashSet<MapLocation> currentLine) {
-//
-//    }
 
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
