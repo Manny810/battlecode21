@@ -1,13 +1,51 @@
 package basicplayer;
 import battlecode.common.*;
 
+import java.util.Objects;
+
 public class Muckraker extends Robot {
 
     public Muckraker(RobotController rc) throws GameActionException {
         super(rc);
     }
 
-    static void exploreRadiallyOutward(RobotController rc) throws GameActionException {
+
+
+    private void exploreRadiallyOutward() throws GameActionException {
+        // Get the direction that it was spawned in
+        int currentID = rc.getID();
+        int originEnlightenmentCenterID = RobotPlayer.getEnlightenmentCenterIds().get(currentID);
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
+        MapLocation originECLocation = null;
+        for (RobotInfo robot : nearbyRobots) {
+            if (robot.ID == originEnlightenmentCenterID) {
+                originECLocation = robot.location;
+            }
+        }
+        Direction muckrakerDirection = Objects.requireNonNull(rc.getLocation().directionTo(originECLocation)).opposite();
+        System.out.println(muckrakerDirection);
+
+        while (true) {
+            if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) {
+                if (rc.canMove(muckrakerDirection)) {
+                    rc.move(muckrakerDirection);
+                    rc.detectNearbyRobots();
+                    RobotInfo[] sensedRobots = rc.senseNearbyRobots();
+                    for (RobotInfo robot : sensedRobots) {
+                        if (robot.team == Team.NEUTRAL) {
+                            MapLocation neutralECLocation = robot.location;
+                            // add neutralECLocation to some dictionary
+                        } else if (robot.team == allyTeam.opponent() && robot.type == RobotType.ENLIGHTENMENT_CENTER) {
+                            MapLocation enemyECLocation = robot.location;
+                        }
+                    }
+                }
+            } else { // Location not on the map
+
+            }
+        }
+
+
     }
 
     public void run() throws GameActionException {
