@@ -17,7 +17,7 @@ public class EnlightenmentCenter {
     static final int TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO;
 
     static final int SLANDERER_INFLUENCE = 100;
-    static final int POLITICIAN_INFLUENCE = 10;
+    static final int POLITICIAN_INFLUENCE = 50;
     static final int MUCKRAKER_INFLUENCE = 1;
 
     static int counter = 0;

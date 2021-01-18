@@ -5,6 +5,8 @@ import battlecode.common.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import static basicplayer.RobotPlayer.rc;
+
 public class Politician {
 
     static final MapLocation testTarget = new MapLocation(25927, 25299);
@@ -12,9 +14,9 @@ public class Politician {
 
 
     static void runPolitician(RobotController rc) throws GameActionException {
-        MapLocation enlightmentCenterTarget = null;
+        MapLocation enlightmentCenterTarget = getTarget();
+
         // If we have a target
-        /**
         if (enlightmentCenterTarget != null){
             int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
             if (rc.canEmpower(distance)){ // if it can empower the neutral ec
@@ -25,18 +27,16 @@ public class Politician {
             }
         } else { // doesn't have a target and needs to get one
             for (MapLocation neutralEC: RobotPlayer.neutralEnlightmentCenters){
-                if (RobotPlayer.politicianAssignments.containsKey(neutralEC)){
-
-                } else {
+                if (!RobotPlayer.politicianAssignments.containsKey(neutralEC)){
                     Set<Integer> set = new HashSet<>();
                     set.add(rc.getID());
                     RobotPlayer.politicianAssignments.put(neutralEC, set);
-                    enlightmentCenterTarget = neutralEC;
                 }
             }
 
         }
-        **/
+
+        /**
         RobotPlayer.basicBugStraightLine(testTarget);
 
         Team enemy = rc.getTeam().opponent();
@@ -50,9 +50,17 @@ public class Politician {
         }
         if (RobotPlayer.tryMove(RobotPlayer.randomDirection()))
             System.out.println("I moved!");
+         **/
     }
 
-    private void getTarget() {
+    private static MapLocation getTarget() {
+        int id = rc.getID();
+        for (MapLocation neutralEc: RobotPlayer.politicianAssignments.keySet()){
+            if (RobotPlayer.politicianAssignments.get(neutralEc).contains(id)){
+                return neutralEc;
+            }
+        }
+        return null;
     }
 
 }
