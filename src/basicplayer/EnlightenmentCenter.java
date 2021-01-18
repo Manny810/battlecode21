@@ -11,10 +11,37 @@ public class EnlightenmentCenter {
             RobotType.MUCKRAKER,
     };
 
+    static final int POLITICIAN_RATIO = 3;
+    static final int SLANDERER_RATIO = 1;
+    static final int MUCKRAKER_RATIO = 6;
+    static final int TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO;
+
+    static final int SLANDERER_INFLUENCE = 100;
+    static final int POLITICIAN_INFLUENCE = 10;
+    static final int MUCKRAKER_INFLUENCE = 1;
+
     static int counter = 0;
     static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
-        RobotType toBuild = spawnRobot();
-        int influence = 50;
+        int id = rc.getID();
+        int slanderer = RobotPlayer.slandererCount.get(id);
+        int politician = RobotPlayer.politicianCount.get(id);
+        int muckraker = RobotPlayer.muckrakerCount.get(id);
+
+        int total = slanderer + politician + muckraker;
+
+        RobotType toBuild;
+        int influence;
+        if (slanderer/total < SLANDERER_RATIO/TOTAL_RATIO){
+            toBuild = RobotType.SLANDERER;
+            influence = SLANDERER_INFLUENCE;
+        } else if (muckraker/total < MUCKRAKER_RATIO/TOTAL_RATIO){
+            toBuild = RobotType.MUCKRAKER;
+            influence = MUCKRAKER_INFLUENCE;
+        } else {
+            toBuild = RobotType.POLITICIAN;
+            influence = POLITICIAN_INFLUENCE;
+        }
+
         for (Direction dir: directions) {
             if (rc.canBuildRobot(toBuild, dir, influence) && rc.getTeam().equals(Team.A) && counter == 0) {
                 rc.buildRobot(toBuild,dir, influence);
@@ -23,7 +50,6 @@ public class EnlightenmentCenter {
                 RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
                 for (RobotInfo robot : nearbyRobots){
                     if (robot.getLocation().equals(newLocation)){
-                        int id = robot.getID();
                         RobotPlayer.enlightmentCenterIds.put(id, rc.getID());
                     }
                 }

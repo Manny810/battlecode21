@@ -34,12 +34,20 @@ public strictfp class RobotPlayer {
     // a set of map locations with enemy enlightment centers
     static Set<MapLocation> enemyEnlightmentCenters = new HashSet<>();
 
+    static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
+
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
             RobotType.SLANDERER,
             RobotType.MUCKRAKER,
     };
+
+    // For enlightment Centers
+    static Map<Integer, Integer> slandererCount = new HashMap<>();
+    static Map<Integer, Integer> politicianCount = new HashMap<>();
+    static Map<Integer, Integer> muckrakerCount = new HashMap<>();
+
 
     static final int ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED = 40;
     static final int POLITICIAN_SENSOR_RADIUS_SQUARED = 40;

@@ -5,8 +5,23 @@ import battlecode.common.*;
 public class Politician {
 
     static final MapLocation testTarget = new MapLocation(24479, 19048);
+    static final MapLocation enlightmentCenterTarget = null;
+    static final int POLITICIAN_ACTION_RADIUS = 9;
 
     static void runPolitician(RobotController rc) throws GameActionException {
+        // If we have a target
+        if (enlightmentCenterTarget != null){
+            int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
+            if (rc.canEmpower(distance)){ // if it can empower the neutral ec
+                rc.empower(distance);
+            }
+            else if (distance > POLITICIAN_ACTION_RADIUS){ // if it's too far
+                RobotPlayer.basicBugStraightLine(enlightmentCenterTarget);
+            }
+        } else { // doesn't have a target and needs to get one
+            
+
+        }
 
         RobotPlayer.basicBugStraightLine(testTarget);
 
