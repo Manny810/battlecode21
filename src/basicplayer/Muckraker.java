@@ -16,7 +16,7 @@ public class Muckraker extends Robot {
     private void exploreRadiallyOutward() throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
-        int originEnlightenmentCenterID = RobotPlayer.getEnlightenmentCenterIds().get(currentID);
+        int originEnlightenmentCenterID = enlightmentCenterId;
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
         MapLocation originECLocation = null;
         for (RobotInfo robot : nearbyRobots) {

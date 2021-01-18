@@ -15,10 +15,10 @@ public class EnlightenmentCenter extends Robot {
             RobotType.MUCKRAKER,
     };
 
-    static final int POLITICIAN_RATIO = 3;
-    static final int SLANDERER_RATIO = 1;
-    static final int MUCKRAKER_RATIO = 6;
-    static final int TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1;
+    static final double POLITICIAN_RATIO = 3.0;
+    static final double SLANDERER_RATIO = 1.0;
+    static final double MUCKRAKER_RATIO = 6.0;
+    static final double TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1.0;
 
     static final int SLANDERER_INFLUENCE = 100;
     static final int POLITICIAN_INFLUENCE = 50;
@@ -45,7 +45,7 @@ public class EnlightenmentCenter extends Robot {
         int id = this.rc.getID();
 
 
-        int total = slandererCount + politicianCount + muckrakerCount + 1;
+        double total = slandererCount + politicianCount + muckrakerCount + 1.0;
 
         RobotType toBuild;
         int influence;
@@ -62,17 +62,14 @@ public class EnlightenmentCenter extends Robot {
 
         for (Direction dir: directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
-                rc.buildRobot(toBuild,dir, influence);
-                if (slandererCount/total < SLANDERER_RATIO/TOTAL_RATIO){
+                rc.buildRobot(toBuild, dir, influence);
+                if (slandererCount / total < SLANDERER_RATIO / TOTAL_RATIO) {
                     slandererCount++;
-                } else if (muckrakerCount/total < MUCKRAKER_RATIO/TOTAL_RATIO){
+                } else if (muckrakerCount / total < MUCKRAKER_RATIO / TOTAL_RATIO) {
                     muckrakerCount++;
                 } else {
                     politicianCount++;
                 }
-
-            } else {
-                break;
             }
         }
     }
