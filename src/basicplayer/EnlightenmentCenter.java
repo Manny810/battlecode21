@@ -23,6 +23,16 @@ public class EnlightenmentCenter {
     static int counter = 0;
     static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
         int id = rc.getID();
+        if (!RobotPlayer.slandererCount.containsKey(id)){
+            RobotPlayer.slandererCount.put(id, 0);
+        }
+        if (!RobotPlayer.politicianCount.containsKey(id)){
+            RobotPlayer.politicianCount.put(id, 0);
+        }
+        if (!RobotPlayer.muckrakerCount.containsKey(id)){
+            RobotPlayer.muckrakerCount.put(id, 0);
+        }
+
         int slanderer = RobotPlayer.slandererCount.get(id);
         int politician = RobotPlayer.politicianCount.get(id);
         int muckraker = RobotPlayer.muckrakerCount.get(id);
