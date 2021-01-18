@@ -6,15 +6,11 @@ import com.sun.tools.javac.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class Slanderer extends Robot {
 
-    static final int MUCKRAKER_EFFECT = 20;
-    static final int POLITICIAN_EFFECT = 10;
-    static final int CONFIRMED_SLANDERER_EFFECT = 5;
-    static final int ENEMY_ENLIGHTMENT_CENTER_EFFECT = 5;
-    static final int ENLIGHTMENT_CENTER_EFFECT = 1;
 //    static final ArrayList<Direction> diagonalDirections =new ArrayList<>(List.of(Direction.NORTHEAST,
 //            Direction.SOUTHEAST,
 //            Direction.NORTHWEST,
@@ -37,22 +33,18 @@ public class Slanderer extends Robot {
         return y/hypotenuse;
     }
 
-    static void positionAroundEC(RobotController rc) throws GameActionException {
+    private void positionAroundEC() throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
-//        System.out.println(currentID);
-//        System.out.println(RobotPlayer.enlightmentCenterIds);
         int originEnlightenmentCenterID = RobotPlayer.getEnlightenmentCenterIds().get(currentID);
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
-        System.out.println(nearbyRobots);
         MapLocation originECLocation = null;
         for (RobotInfo robot : nearbyRobots) {
             if (robot.ID == originEnlightenmentCenterID) {
                 originECLocation = robot.location;
             }
         }
-        System.out.println("------------------------------------");
-        Direction slandererDirection = rc.getLocation().directionTo(originECLocation).opposite();
+        Direction slandererDirection = Objects.requireNonNull(rc.getLocation().directionTo(originECLocation)).opposite();
         System.out.println(slandererDirection);
 
         // Edge cases after being spawned from EC -- move directly north or south from spawn OR move away from EC
@@ -74,8 +66,7 @@ public class Slanderer extends Robot {
                 }
 
                 // if ID is even, go on CCW branch, otherwise go on CW branch
-                Direction branchDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[slandererDirection.ordinal()-1] : RobotPlayer.directions[slandererDirection.ordinal()+1] ;
-                slandererDirection = branchDirection;
+                slandererDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[slandererDirection.ordinal()-1] : RobotPlayer.directions[slandererDirection.ordinal()+1];
             }
             else if (rc.canMove(Direction.NORTH)) {
                 rc.move(Direction.NORTH);
@@ -90,16 +81,8 @@ public class Slanderer extends Robot {
         }
     }
 
-<<<<<<< HEAD
-    static void runSlanderer(RobotController rc, HashMap<Integer, Integer> ecIDs) throws GameActionException {
-        System.out.println(ecIDs);
-//        System.out.println(RobotPlayer.getEnlightenmentCenterIds());
-        System.out.println("Not position yet");
-//        positionAroundEC(rc);
-=======
-    void run() throws GameActionException {
-        positionAroundEC(rc);
->>>>>>> 6e90646714e64a63f3d5070555200fbd63be1d89
+    public void run() throws GameActionException {
+        positionAroundEC();
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
 //        MapLocation curLocation = rc.getLocation();
