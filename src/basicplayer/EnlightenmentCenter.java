@@ -70,7 +70,7 @@ public class EnlightenmentCenter extends Robot {
                 } else {
                     politicianCount++;
                 }
-                
+
             } else {
                 break;
             }
