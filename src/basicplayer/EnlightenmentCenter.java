@@ -14,7 +14,7 @@ public class EnlightenmentCenter {
     static final int POLITICIAN_RATIO = 3;
     static final int SLANDERER_RATIO = 1;
     static final int MUCKRAKER_RATIO = 6;
-    static final int TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO;
+    static final int TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1;
 
     static final int SLANDERER_INFLUENCE = 100;
     static final int POLITICIAN_INFLUENCE = 50;
@@ -37,7 +37,7 @@ public class EnlightenmentCenter {
         int politician = RobotPlayer.politicianCount.get(id);
         int muckraker = RobotPlayer.muckrakerCount.get(id);
 
-        int total = slanderer + politician + muckraker;
+        int total = slanderer + politician + muckraker + 1;
 
         RobotType toBuild;
         int influence;
