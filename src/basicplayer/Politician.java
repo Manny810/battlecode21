@@ -17,7 +17,7 @@ public class Politician extends Robot {
         super(rc);
     }
 
-    void run() throws GameActionException {
+    public void run() throws GameActionException {
         MapLocation enlightmentCenterTarget = getTarget();
 
         // If we have a target

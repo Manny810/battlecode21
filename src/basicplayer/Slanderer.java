@@ -36,7 +36,7 @@ public class Slanderer extends Robot {
         return y/hypotenuse;
     }
 
-    static void positionAroundEC(RobotController rc) throws GameActionException {
+    void positionAroundEC() throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
         int originEnlightenmentCenterID = RobotPlayer.enlightmentCenterIds.get(currentID);
@@ -84,8 +84,8 @@ public class Slanderer extends Robot {
         }
     }
 
-    void run() throws GameActionException {
-        positionAroundEC(rc);
+    public void run() throws GameActionException {
+        positionAroundEC();
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
 //        MapLocation curLocation = rc.getLocation();

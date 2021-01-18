@@ -11,7 +11,7 @@ public class Muckraker extends Robot {
 
     }
 
-    void run() throws GameActionException {
+    public void run() throws GameActionException {
         Team enemy = rc.getTeam().opponent();
         int actionRadius = rc.getType().actionRadiusSquared;
         for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {

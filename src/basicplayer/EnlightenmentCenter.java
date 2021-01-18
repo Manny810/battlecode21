@@ -26,7 +26,7 @@ public class EnlightenmentCenter extends Robot {
         super(rc);
     }
 
-    void run() throws GameActionException {
+    public void run() throws GameActionException {
         int id = this.rc.getID();
         if (!RobotPlayer.slandererCount.containsKey(id)){
             RobotPlayer.slandererCount.put(id, 0);
