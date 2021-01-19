@@ -41,7 +41,7 @@ public class EnlightenmentCenter extends Robot {
 
     @Override
     public void run() throws GameActionException {
-        getSensedSquares();
+//        getSensedSquares();
         int id = this.rc.getID();
 
 
@@ -72,6 +72,20 @@ public class EnlightenmentCenter extends Robot {
                 }
             }
         }
+
+////      Testing out diagonal directions
+//        RobotType toBuild = RobotType.MUCKRAKER;
+//        int influence = 20;
+//
+//        for (Direction dir: directions) {
+//            if (rc.canBuildRobot(toBuild, directions[(dir.ordinal()+1)%8], influence)) {
+//                rc.buildRobot(toBuild, directions[(dir.ordinal()+1)%8], influence);
+//            }
+//            Clock.yield();
+//            Clock.yield();
+//            Clock.yield();
+//        }
+
     }
 
 }
