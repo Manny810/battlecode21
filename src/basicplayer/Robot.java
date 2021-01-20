@@ -100,7 +100,7 @@ public abstract class Robot {
             newDetectedBots.remove(location);
 
             // if we saw a neutral piece -> neutral Enlightment Center
-            if (team == Team.NEUTRAL){
+            if (team.equals(Team.NEUTRAL)){
                 newNeutralEnlightmentCenters.add(location);
             }
             // if the robot is an enemy

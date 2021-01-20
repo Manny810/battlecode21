@@ -12,32 +12,35 @@ import static basicplayer.RobotPlayer.rc;
 public class Politician extends Robot {
 
     static final int POLITICIAN_SENSOR_RADIUS_SQUARED = 25;
-    boolean start;
+    int round;
     static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
 
     static final int POLITICIAN_ACTION_RADIUS = 9;
+    MapLocation enlightmentCenterTarget;
 
     public Politician(RobotController rc) throws GameActionException {
         super(rc);
-        start = true;
+        round = 0;
+        enlightmentCenterTarget = null;
     }
 
     @Override
     public void run() throws GameActionException {
         getSensedSquares();
-        MapLocation enlightmentCenterTarget = getTarget();
-
+        System.out.println(neutralEnlightmentCenters);
         // If we have a target
-        if (start){
+        if (round < 2){
             RobotInfo[] nearbyRobots = rc.senseNearbyRobots(8);
             for (RobotInfo robot: nearbyRobots){
                 if (robot.getID() == enlightmentCenterId){
                     Direction direction = rc.getLocation().directionTo(robot.getLocation()).opposite();
                     if (rc.canMove(direction)){
                         rc.move(direction);
+                        round++;
                     }
                 }
             }
+
         } else if (enlightmentCenterTarget != null){
             int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
             if (rc.canEmpower(distance)){ // if it can empower the neutral ec
@@ -52,6 +55,8 @@ public class Politician extends Robot {
                     Set<Integer> set = new HashSet<>();
                     set.add(rc.getID());
                     politicianAssignments.put(neutralEC, set);
+                    enlightmentCenterTarget = neutralEC;
+                    System.out.println("POOPOO " + rc.getID() + ": " + neutralEC.toString());
                 }
             }
 
@@ -77,16 +82,6 @@ public class Politician extends Robot {
     @Override
     public int getSenseRadiusSquared() {
         return POLITICIAN_SENSOR_RADIUS_SQUARED;
-    }
-
-    private MapLocation getTarget() {
-        int id = rc.getID();
-        for (MapLocation neutralEc: politicianAssignments.keySet()){
-            if (politicianAssignments.get(neutralEc).contains(id)){
-                return neutralEc;
-            }
-        }
-        return null;
     }
 
 }

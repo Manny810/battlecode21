@@ -54,7 +54,6 @@ public class Muckraker extends Robot {
 
     @Override
     public void run() throws GameActionException {
-//        getSensedSquares();
 
         exploreRadiallyOutward();
 //        Team enemy = rc.getTeam().opponent();
