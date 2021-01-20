@@ -35,11 +35,10 @@ public class Politician extends Robot {
                 if (robot.getID() == enlightmentCenterId){
                     Direction direction = rc.getLocation().directionTo(robot.getLocation()).opposite();
                     if (rc.canMove(direction)){
-                        rc.move(direction); 
+                        rc.move(direction);
                     }
                 }
             }
-
         } else if (enlightmentCenterTarget != null){
             int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
             if (rc.canEmpower(distance)){ // if it can empower the neutral ec

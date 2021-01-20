@@ -126,6 +126,7 @@ public abstract class Robot {
         int radiusSquared = getSenseRadiusSquared();
         Set<MapLocation> sensedSquares = new HashSet<>();
         curLocation.translate(-radiusSquared, -radiusSquared);
+        /**
         for (int x = 0; x <= 2*radiusSquared; x++){
             for (int y = 0; y <= 2*radiusSquared; y++){
                 // Check all sets of robots to erase any information that is no longer valid
@@ -150,6 +151,7 @@ public abstract class Robot {
             }
             curLocation.translate(-2*radiusSquared, 1);
         }
+         **/
 
         return sensedSquares;
     }

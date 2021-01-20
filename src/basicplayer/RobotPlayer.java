@@ -1,6 +1,5 @@
 package basicplayer;
 import battlecode.common.*;
-import javafx.util.Pair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +15,6 @@ public strictfp class RobotPlayer {
             RobotType.SLANDERER,
             RobotType.MUCKRAKER,
     };
-
-
 
 
     static final Direction[] directions = {
