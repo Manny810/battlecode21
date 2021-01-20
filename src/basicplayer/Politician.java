@@ -15,7 +15,6 @@ public class Politician extends Robot {
     boolean start;
     static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
 
-    static final MapLocation testTarget = new MapLocation(25927, 25299);
     static final int POLITICIAN_ACTION_RADIUS = 9;
 
     public Politician(RobotController rc) throws GameActionException {

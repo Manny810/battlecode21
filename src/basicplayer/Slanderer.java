@@ -17,7 +17,7 @@ public class Slanderer extends Robot {
     Direction slandererDirection;
     boolean inPosition = false;
 
-    int highwayExit = 2;
+    int highwayExit = 0;
     int highwayCounter = 0;
     boolean exitedHighway = false;
 
@@ -41,7 +41,7 @@ public class Slanderer extends Robot {
     private Direction[] getDirectionForOrganization (Direction spawnDir) {
         // slandererDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[slandererDirection.ordinal()-1] : RobotPlayer.directions[slandererDirection.ordinal()+1];
         switch (spawnDir) {
-            case NORTH: case SOUTH:
+            case NORTH: case NORTHEAST: case NORTHWEST: case SOUTH: case SOUTHEAST: case SOUTHWEST:
                 return new Direction[]{Direction.NORTH, Direction.SOUTH};
             case WEST: case EAST:
                 return new Direction[]{Direction.EAST, Direction.WEST};
@@ -54,15 +54,11 @@ public class Slanderer extends Robot {
     private void moveOneUnitAwayFromEC() throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
-        int originECID = 13566;
-//        int originECID = enlightmentCenterId;
+        int originECID = enlightmentCenterId;
         System.out.println(originECID);
-        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
-        System.out.println("NEARBY ROBOTS : " + nearbyRobots);
-        System.out.println("NEARBY ROBOT LENGTH: " + nearbyRobots.length);
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
         MapLocation originECLocation = null;
         for (RobotInfo robot : nearbyRobots) {
-            System.out.println(robot.ID + " Loc:" + robot.location + " Type:" + robot.type);
             if (robot.ID == originECID) {
                 originECLocation = robot.location;
                 spawnDirection = rc.getLocation().directionTo(originECLocation).opposite();
@@ -85,7 +81,6 @@ public class Slanderer extends Robot {
             inPosition = true;
         }
         else if (rc.canMove(spawnDirection)) {
-            System.out.println("Moved in " + spawnDirection + "direction");
             rc.move(spawnDirection);
             movedAwayFromEC = true;
         }
@@ -95,10 +90,8 @@ public class Slanderer extends Robot {
     @Override
     public void run() throws GameActionException {
 //        getSensedSquares();
-        System.out.println("Moved away from EC " + movedAwayFromEC);
-        System.out.println("Not in position " + inPosition);
         if (!movedAwayFromEC) {
-            System.out.println("Currently moving away from the EC");
+            System.out.println("Currently moving one unit away from the EC");
             moveOneUnitAwayFromEC();
         }
         else if (!inPosition) {
@@ -113,7 +106,15 @@ public class Slanderer extends Robot {
                 } else if (highwayCounter == highwayExit) {
                     // if ID is even, go on CCW branch, otherwise go on CW branch
                     System.out.println("At the exit, current direction is " + slandererDirection);
-                    slandererDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[spawnDirection.ordinal()-1] : RobotPlayer.directions[spawnDirection.ordinal()+1];
+                    System.out.println((spawnDirection.ordinal()-1)%8);
+                    int ordinalDirection = (rc.getID()%2 == 0) ? (spawnDirection.ordinal()-1) : (spawnDirection.ordinal()+1);
+                    int ordinalDirectionModded;
+                    if (ordinalDirection < 0) {
+                        ordinalDirectionModded = RobotPlayer.directions.length + ordinalDirection;
+                    } else {
+                        ordinalDirectionModded = ordinalDirection%8;
+                    }
+                    slandererDirection = RobotPlayer.directions[ordinalDirectionModded];
                     System.out.println("Turning towards the " + slandererDirection + " direction");
 
                     while (true) { // Leave the highway
@@ -126,15 +127,24 @@ public class Slanderer extends Robot {
                 }
             }
             else { // On a diagonal
-                for (Direction direction : getDirectionForOrganization(spawnDirection)) {
-                    if (rc.canMove(direction)) {
-                        rc.move(direction);
-                        inPosition = true;
+                while(true) {
+                    for (Direction direction : getDirectionForOrganization(spawnDirection)) {
+                        System.out.println("Trying to move north or south");
+                        if (rc.canMove(direction)) {
+                            System.out.println(direction);
+                            rc.move(direction);
+                            inPosition = true;
+                            break;
+                        }
+                    }
+                    if (!inPosition) {
+                        if (rc.canMove(slandererDirection)) {
+                            rc.move(slandererDirection);
+                        }
+                    } else {
                         break;
                     }
-                }
-                if (!inPosition) {
-                    rc.move(slandererDirection);
+                    Clock.yield();
                 }
             }
         }

@@ -74,8 +74,8 @@ public class EnlightenmentCenter extends Robot {
         }
 
 ////      Testing out diagonal directions
-//        RobotType toBuild = RobotType.MUCKRAKER;
-//        int influence = 20;
+//        RobotType toBuild = RobotType.SLANDERER;
+//        int influence = 100;
 //
 //        for (Direction dir: directions) {
 //            if (rc.canBuildRobot(toBuild, directions[(dir.ordinal()+1)%8], influence)) {

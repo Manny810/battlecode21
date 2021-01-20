@@ -62,7 +62,7 @@ public abstract class Robot {
         allyTeam = rc.getTeam();
         enemyTeam = allyTeam.opponent();
 
-        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
         for (RobotInfo robot: nearbyRobots){
             if (robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER)){
                 enlightmentCenterId = robot.getID();
