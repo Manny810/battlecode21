@@ -11,11 +11,15 @@ import java.util.Objects;
 
 public class Slanderer extends Robot {
 
-//    static final ArrayList<Direction> diagonalDirections =new ArrayList<>(List.of(Direction.NORTHEAST,
-//            Direction.SOUTHEAST,
-//            Direction.NORTHWEST,
-//            Direction.SOUTHWEST));
     static final int SLANDERER_SENSOR_RADIUS_SQUARED = 20;
+    boolean movedAwayFromEC = false;
+    Direction spawnDirection;
+    Direction slandererDirection;
+    boolean inPosition = false;
+
+    int highwayExit = 0;
+    int highwayCounter = 0;
+    boolean exitedHighway = false;
 
     public Slanderer(RobotController rc) throws GameActionException {
         super(rc);
@@ -34,58 +38,118 @@ public class Slanderer extends Robot {
         return y/hypotenuse;
     }
 
-    private void positionAroundEC() throws GameActionException {
+    private Direction[] getDirectionForOrganization (Direction spawnDir) {
+        // slandererDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[slandererDirection.ordinal()-1] : RobotPlayer.directions[slandererDirection.ordinal()+1];
+        switch (spawnDir) {
+            case NORTH: case NORTHEAST: case NORTHWEST: case SOUTH: case SOUTHEAST: case SOUTHWEST:
+                return new Direction[]{Direction.NORTH, Direction.SOUTH};
+            case WEST: case EAST:
+                return new Direction[]{Direction.EAST, Direction.WEST};
+            default:
+                return new Direction[]{spawnDir};
+        }
+
+    }
+
+    private void moveOneUnitAwayFromEC() throws GameActionException {
         // Get the direction that it was spawned in
         int currentID = rc.getID();
-        int originEnlightenmentCenterID = enlightmentCenterId;
-        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(1);
+        int originECID = enlightmentCenterId;
+        System.out.println(originECID);
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
         MapLocation originECLocation = null;
         for (RobotInfo robot : nearbyRobots) {
-            if (robot.ID == originEnlightenmentCenterID) {
+            if (robot.ID == originECID) {
                 originECLocation = robot.location;
+                spawnDirection = rc.getLocation().directionTo(originECLocation).opposite();
+                slandererDirection = spawnDirection;
+                System.out.println("My initial starting direction is in this direction : " + spawnDirection);
+                break;
             }
         }
-        Direction slandererDirection = Objects.requireNonNull(rc.getLocation().directionTo(originECLocation)).opposite();
-        System.out.println(slandererDirection);
+
+        System.out.println(spawnDirection);
 
         // Edge cases after being spawned from EC -- move directly north or south from spawn OR move away from EC
-        if ((slandererDirection == Direction.NORTHEAST || slandererDirection == Direction.NORTHWEST) && rc.canMove(Direction.NORTH)) {
+        if ((spawnDirection == Direction.NORTHEAST || spawnDirection == Direction.NORTHWEST) && rc.canMove(Direction.NORTH)) {
             rc.move(Direction.NORTH);
-        } else if ((slandererDirection == Direction.SOUTHEAST || slandererDirection == Direction.SOUTHWEST) && rc.canMove(Direction.SOUTH)){
+            movedAwayFromEC = true;
+            inPosition = true;
+        } else if ((spawnDirection == Direction.SOUTHEAST || spawnDirection == Direction.SOUTHWEST) && rc.canMove(Direction.SOUTH)){
             rc.move(Direction.SOUTH);
+            movedAwayFromEC = true;
+            inPosition = true;
         }
-        else if (rc.canMove(slandererDirection)) {
-            rc.move(slandererDirection);
+        else if (rc.canMove(spawnDirection)) {
+            rc.move(spawnDirection);
+            movedAwayFromEC = true;
         }
 
-        while (true) {
-            if (!(slandererDirection == Direction.NORTHEAST || slandererDirection == Direction.NORTHWEST || slandererDirection == Direction.SOUTHEAST || slandererDirection == Direction.SOUTHWEST )) { // On highway path
-                for (int i = 0; i < 2; i++) { //Coded to move only to first exit of highway
-                    if (rc.canMove(slandererDirection)) {
-                        rc.move(slandererDirection);
-                    }
-                }
-
-                // if ID is even, go on CCW branch, otherwise go on CW branch
-                slandererDirection = (rc.getID()%2 == 0) ? RobotPlayer.directions[slandererDirection.ordinal()-1] : RobotPlayer.directions[slandererDirection.ordinal()+1];
-            }
-            else if (rc.canMove(Direction.NORTH)) {
-                rc.move(Direction.NORTH);
-                break;
-            } else if (rc.canMove(Direction.SOUTH)) {
-                rc.move(Direction.SOUTH);
-                break;
-            } else {
-                rc.move(slandererDirection);
-            }
-            Clock.yield();
-        }
     }
 
     @Override
     public void run() throws GameActionException {
-        getSensedSquares();
-        positionAroundEC();
+//        getSensedSquares();
+        if (!movedAwayFromEC) {
+            System.out.println("Currently moving one unit away from the EC");
+            moveOneUnitAwayFromEC();
+        }
+        else if (!inPosition) {
+            if ((slandererDirection != Direction.NORTHEAST && slandererDirection != Direction.NORTHWEST && slandererDirection != Direction.SOUTHEAST && slandererDirection != Direction.SOUTHWEST )) { // On highway path
+                if (highwayCounter < highwayExit) {
+                    System.out.println("Moving on highway");
+                    if (rc.canMove(spawnDirection)) {
+                        rc.move(spawnDirection);
+                        highwayCounter++;
+                        System.out.println("Counter : " +highwayCounter + " Exit :" + highwayExit );
+                    }
+                } else if (highwayCounter == highwayExit) {
+                    // if ID is even, go on CCW branch, otherwise go on CW branch
+                    System.out.println("At the exit, current direction is " + slandererDirection);
+                    System.out.println((spawnDirection.ordinal()-1)%8);
+                    int ordinalDirection = (rc.getID()%2 == 0) ? (spawnDirection.ordinal()-1) : (spawnDirection.ordinal()+1);
+                    int ordinalDirectionModded;
+                    if (ordinalDirection < 0) {
+                        ordinalDirectionModded = RobotPlayer.directions.length + ordinalDirection;
+                    } else {
+                        ordinalDirectionModded = ordinalDirection%8;
+                    }
+                    slandererDirection = RobotPlayer.directions[ordinalDirectionModded];
+                    System.out.println("Turning towards the " + slandererDirection + " direction");
+
+                    while (true) { // Leave the highway
+                        if (rc.canMove(slandererDirection)) {
+                            rc.move(slandererDirection);
+                            break;
+                        }
+                        Clock.yield();
+                    }
+                }
+            }
+            else { // On a diagonal
+                while(true) {
+                    for (Direction direction : getDirectionForOrganization(spawnDirection)) {
+                        System.out.println("Trying to move north or south");
+                        if (rc.canMove(direction)) {
+                            System.out.println(direction);
+                            rc.move(direction);
+                            inPosition = true;
+                            break;
+                        }
+                    }
+                    if (!inPosition) {
+                        if (rc.canMove(slandererDirection)) {
+                            rc.move(slandererDirection);
+                        }
+                    } else {
+                        break;
+                    }
+                    Clock.yield();
+                }
+            }
+        }
+
+//        positionAroundEC();
 //        double horizontalForce = 0.0;
 //        double verticalForce = 0.0;
 //        MapLocation curLocation = rc.getLocation();
