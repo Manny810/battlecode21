@@ -28,6 +28,13 @@ public strictfp class RobotPlayer {
             Direction.NORTHWEST,
     };
 
+    static final Direction[] cardinalDirections = {
+            Direction.NORTH,
+            Direction.EAST,
+            Direction.SOUTH,
+            Direction.WEST,
+    };
+
     static int turnCount;
 
 
