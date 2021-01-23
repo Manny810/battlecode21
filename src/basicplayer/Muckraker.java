@@ -34,12 +34,13 @@ public class Muckraker extends Robot {
         }
 
         while (true) {
+            senseSquares();
             if (rc.isReady()) {
-                System.out.println(rc.onTheMap(rc.getLocation().add(muckrakerDirection)));
+                //System.out.println(rc.onTheMap(rc.getLocation().add(muckrakerDirection)));
                 if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) { // Location is on the map
-                    System.out.println("It's on the map bro");
+                    //System.out.println("It's on the map bro");
                     if (rc.canMove(muckrakerDirection)) { // Can move in designated directoin
-                        System.out.println("Can move");
+                        //System.out.println("Can move");
                         rc.move(muckrakerDirection);
                         rc.detectNearbyRobots();
                         RobotInfo[] sensedRobots = rc.senseNearbyRobots();
@@ -53,8 +54,8 @@ public class Muckraker extends Robot {
                             }
                         }
                     } else if (rc.isLocationOccupied(rc.getLocation().add(muckrakerDirection))) { // Location is being occupied so can't move
-                        System.out.println("Can it move past a unit " + rc.isLocationOccupied(rc.getLocation().add(muckrakerDirection).add(muckrakerDirection)));
-                        System.out.println("The location " + rc.getLocation().add(muckrakerDirection).add(muckrakerDirection));
+                        //System.out.println("Can it move past a unit " + rc.isLocationOccupied(rc.getLocation().add(muckrakerDirection).add(muckrakerDirection)));
+                        //System.out.println("The location " + rc.getLocation().add(muckrakerDirection).add(muckrakerDirection));
                         for (int i = 0; i < 8; i++) {
                             int newOrdinalForNextDirection = (rc.getID() % 2 == 0) ? muckrakerDirection.ordinal() - 1 : muckrakerDirection.ordinal() + 1;
                             int ordinalDirectionModded;
@@ -72,7 +73,7 @@ public class Muckraker extends Robot {
                         }
                     }
                 } else { // Location not on the map
-                        System.out.println("Its not on the map");
+                        //System.out.println("Its not on the map");
                         ArrayList<Integer> blockedDirectionsOrdinals = new ArrayList<>();
                         int blockedDirCounter = 0;
                         for (Direction dir : RobotPlayer.cardinalDirections) {
@@ -80,7 +81,7 @@ public class Muckraker extends Robot {
                                 blockedDirectionsOrdinals.add(dir.ordinal());
                             }
                         }
-                        System.out.println("BLOCKED DIRECTIONS NUMBERS" + blockedDirectionsOrdinals);
+                        //System.out.println("BLOCKED DIRECTIONS NUMBERS" + blockedDirectionsOrdinals);
                         Direction[] blockedDirections = new Direction[blockedDirectionsOrdinals.size()];
                         for (int i = 0; i < blockedDirectionsOrdinals.size(); i++) {
                             blockedDirections[i] = RobotPlayer.directions[blockedDirectionsOrdinals.get(i)];
@@ -88,14 +89,14 @@ public class Muckraker extends Robot {
                         Direction blockingWallDirection = findWallDirection(blockedDirections);
                         Direction newDirection = bounceOffMapBoundary(muckrakerDirection, blockingWallDirection);
                         muckrakerDirection = newDirection;
-                        System.out.println("New direction " + muckrakerDirection);
+                        //System.out.println("New direction " + muckrakerDirection);
 
                         if (rc.canMove(muckrakerDirection)) {
                             rc.move(muckrakerDirection);
                         }
                     }
             } else {
-                System.out.println("Not ready");
+                //System.out.println("Not ready");
                 Clock.yield();
             }
 

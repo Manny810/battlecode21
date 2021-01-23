@@ -28,8 +28,12 @@ public class Politician extends Robot {
     public void run() throws GameActionException {
         senseSquares();
         MapLocation location = getCommandFromEC();
+        System.out.println(rc.getFlag(enlightmentCenterId));
+        System.out.println("EC ID: " + enlightmentCenterId);
+        System.out.println(0/(2^23));
         if (location != null){
             targetLocation = location;
+            System.out.println("GOT A NEW TARGET BRO at " + location.toString());
         }
         // If we have a target
         if (round < 2){
@@ -39,12 +43,13 @@ public class Politician extends Robot {
                     Direction direction = rc.getLocation().directionTo(robot.getLocation()).opposite();
                     if (rc.canMove(direction)){
                         rc.move(direction);
-                        round++;
                     }
                 }
             }
+            round++;
 
         } else if (targetLocation != null){
+            System.out.println("My target Location Bro: " + location.toString());
             RobotPlayer.basicBugStraightLine(targetLocation);
 
             Team enemy = rc.getTeam().opponent();
@@ -58,21 +63,7 @@ public class Politician extends Robot {
             }
         }
 
-        /**
-        RobotPlayer.basicBugStraightLine(testTarget);
 
-        Team enemy = rc.getTeam().opponent();
-        int actionRadius = rc.getType().actionRadiusSquared;
-        RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
-        if (attackable.length != 0 && rc.canEmpower(actionRadius)) {
-            System.out.println("empowering...");
-            rc.empower(actionRadius);
-            System.out.println("empowered");
-            return;
-        }
-        if (RobotPlayer.tryMove(RobotPlayer.randomDirection()))
-            System.out.println("I moved!");
-         **/
     }
 
     @Override

@@ -63,6 +63,15 @@ public class EnlightenmentCenter extends Robot {
         for (Direction dir : RobotPlayer.ordinalDirections) { // Build one slanderer in the beginning
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 rc.buildRobot(toBuild, dir, influence);
+                MapLocation newRobot = rc.getLocation().add(dir);
+                RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
+                int newRobotId = -1;
+                for (RobotInfo robot : nearbyRobots) {
+                    if (robot.getLocation().equals(newRobot)) {
+                        newRobotId = robot.getID();
+                    }
+                }
+                slandererIds.add(newRobotId);
                 slandererCount++;
                 break;
             }
@@ -75,9 +84,19 @@ public class EnlightenmentCenter extends Robot {
         while (initialMuckrakerCount < 8) {
             System.out.println("Make muckrakers");
             if (rc.isReady()) {
-                if (rc.canBuildRobot(toBuild, RobotPlayer.directions[initialMuckrakerCount], influence)) {
-                    rc.buildRobot(toBuild, RobotPlayer.directions[initialMuckrakerCount], influence);
+                Direction dir = RobotPlayer.directions[initialMuckrakerCount];
+                if (rc.canBuildRobot(toBuild, dir, influence)) {
+                    rc.buildRobot(toBuild, dir, influence);
+                    MapLocation newRobot = rc.getLocation().add(dir);
+                    RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
+                    int newRobotId = -1;
+                    for (RobotInfo robot : nearbyRobots) {
+                        if (robot.getLocation().equals(newRobot)) {
+                            newRobotId = robot.getID();
+                        }
+                    }
                     muckrakerCount++;
+                    muckrakerIds.add(newRobotId);
                 }
                 initialMuckrakerCount++;
             } else {
@@ -128,10 +147,10 @@ public class EnlightenmentCenter extends Robot {
                             newRobotId = robot.getID();
                         }
                     }
-                    if (slandererCount / total < SLANDERER_RATIO / TOTAL_RATIO) {
+                    if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
                         slandererCount++;
                         slandererIds.add(newRobotId);
-                    } else if (muckrakerCount / total < MUCKRAKER_RATIO / TOTAL_RATIO) {
+                    } else if (muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO) {
                         muckrakerCount++;
                         muckrakerIds.add(newRobotId);
                     } else {
