@@ -16,15 +16,6 @@ public class Muckraker extends Robot {
         super(rc);
     }
 
-    private void goAroundARobot(MapLocation targetLocation, Direction currentDirection) throws GameActionException {
-        while (true) {
-            if (currentDirection == Direction.NORTHEAST || currentDirection == Direction.NORTHWEST || currentDirection == Direction.SOUTHEAST || currentDirection == Direction.SOUTHWEST) {
-
-            }
-        }
-    }
-
-
 
     private void exploreRadiallyOutward() throws GameActionException {
         // Get the direction that it was spawned in
@@ -45,9 +36,9 @@ public class Muckraker extends Robot {
         while (true) {
             if (rc.isReady()) {
                 System.out.println(rc.onTheMap(rc.getLocation().add(muckrakerDirection)));
-                if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) {
+                if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) { // Location is on the map
                     System.out.println("It's on the map bro");
-                    if (rc.canMove(muckrakerDirection)) {
+                    if (rc.canMove(muckrakerDirection)) { // Can move in designated directoin
                         System.out.println("Can move");
                         rc.move(muckrakerDirection);
                         rc.detectNearbyRobots();
@@ -61,7 +52,7 @@ public class Muckraker extends Robot {
                                 MapLocation enemyECLocation = robot.location;
                             }
                         }
-                    } else if (rc.isLocationOccupied(rc.getLocation().add(muckrakerDirection))) {
+                    } else if (rc.isLocationOccupied(rc.getLocation().add(muckrakerDirection))) { // Location is being occupied so can't move
                         System.out.println("Can it move past a unit " + rc.isLocationOccupied(rc.getLocation().add(muckrakerDirection).add(muckrakerDirection)));
                         System.out.println("The location " + rc.getLocation().add(muckrakerDirection).add(muckrakerDirection));
                         for (int i = 0; i < 8; i++) {
@@ -81,33 +72,32 @@ public class Muckraker extends Robot {
                         }
                     }
                 } else { // Location not on the map
-                    System.out.println("Its not on the map");
-                    ArrayList<Integer> blockedDirectionsOrdinals = new ArrayList<>();
-                    int blockedDirCounter = 0;
-                    for (Direction dir : RobotPlayer.cardinalDirections) {
-                        if (!(rc.onTheMap(rc.getLocation().add(dir)))) {
-                            blockedDirectionsOrdinals.add(dir.ordinal());
+                        System.out.println("Its not on the map");
+                        ArrayList<Integer> blockedDirectionsOrdinals = new ArrayList<>();
+                        int blockedDirCounter = 0;
+                        for (Direction dir : RobotPlayer.cardinalDirections) {
+                            if (!(rc.onTheMap(rc.getLocation().add(dir)))) {
+                                blockedDirectionsOrdinals.add(dir.ordinal());
+                            }
+                        }
+                        System.out.println("BLOCKED DIRECTIONS NUMBERS" + blockedDirectionsOrdinals);
+                        Direction[] blockedDirections = new Direction[blockedDirectionsOrdinals.size()];
+                        for (int i = 0; i < blockedDirectionsOrdinals.size(); i++) {
+                            blockedDirections[i] = RobotPlayer.directions[blockedDirectionsOrdinals.get(i)];
+                        }
+                        Direction blockingWallDirection = findWallDirection(blockedDirections);
+                        Direction newDirection = bounceOffMapBoundary(muckrakerDirection, blockingWallDirection);
+                        muckrakerDirection = newDirection;
+                        System.out.println("New direction " + muckrakerDirection);
+
+                        if (rc.canMove(muckrakerDirection)) {
+                            rc.move(muckrakerDirection);
                         }
                     }
-                    System.out.println("BLOCKED DIRECTIONS NUMBERS" + blockedDirectionsOrdinals);
-                    Direction[] blockedDirections = new Direction[blockedDirectionsOrdinals.size()];
-                    for (int i = 0; i < blockedDirectionsOrdinals.size(); i++) {
-                        blockedDirections[i] = RobotPlayer.directions[blockedDirectionsOrdinals.get(i)];
-                    }
-                    Direction blockingWallDirection = findWallDirection(blockedDirections);
-                    Direction newDirection = bounceOffMapBoundary(muckrakerDirection, blockingWallDirection);
-                    muckrakerDirection = newDirection;
-                    System.out.println("New direction " + muckrakerDirection);
-
-                    if (rc.canMove(muckrakerDirection)) {
-                        rc.move(muckrakerDirection);
-                    }
-                }
             } else {
                 System.out.println("Not ready");
                 Clock.yield();
             }
-
 
         }
     }
