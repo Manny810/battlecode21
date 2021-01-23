@@ -54,75 +54,66 @@ public abstract class Robot {
         }
     }
 
-    public Direction[] bounceOffMapBoundary(Direction attemptedDirection, Direction wallDirection) {
+    public Direction bounceOffMapBoundary(Direction attemptedDirection, Direction wallDirection) {
         switch(attemptedDirection) {
             case NORTH:
                 switch (wallDirection) {
-                    case NORTH:
-                        return new Direction[]{Direction.WEST, Direction.EAST};
-                    case NORTHWEST:
-                        return new Direction[]{Direction.EAST};
+                    case NORTH: case NORTHWEST:
+                        return Direction.EAST;
                     case NORTHEAST:
-                        return new Direction[]{Direction.SOUTH};
+                        return Direction.SOUTH;
                 }
             case NORTHEAST:
                 switch (wallDirection) {
                     case NORTH: case NORTHWEST:
-                        return new Direction[]{Direction.SOUTHEAST};
+                        return Direction.SOUTHEAST;
                     case NORTHEAST:
-                        return new Direction[]{Direction.SOUTH};
+                        return Direction.SOUTH;
                 }
             case NORTHWEST:
                 switch (wallDirection) {
                     case NORTH: case NORTHEAST:
-                        return new Direction[]{Direction.SOUTHWEST};
+                        return Direction.SOUTHWEST;
                     case NORTHWEST:
-                        return new Direction[]{Direction.SOUTH};
+                        return Direction.EAST;
                 }
             case SOUTH:
                 switch (wallDirection) {
-                    case SOUTH:
-                        return new Direction[]{Direction.WEST, Direction.EAST};
-                    case SOUTHEAST:
-                        return new Direction[]{Direction.WEST};
+                    case SOUTH: case SOUTHEAST:
+                        return Direction.WEST;
                     case SOUTHWEST:
-                        return new Direction[]{Direction.NORTH};
+                        return Direction.NORTH;
                 }
             case SOUTHWEST:
                 switch (wallDirection) {
                     case SOUTH: case SOUTHEAST:
-                        return new Direction[]{Direction.NORTHWEST};
+                        return Direction.NORTHWEST;
                     case SOUTHWEST:
-                        return new Direction[]{Direction.NORTH};
+                        return Direction.NORTH;
                 }
             case SOUTHEAST:
                 switch (wallDirection) {
                     case SOUTH: case SOUTHWEST:
-                        return new Direction[]{Direction.NORTHEAST};
+                        return Direction.NORTHEAST;
                     case SOUTHEAST:
-                        return new Direction[]{Direction.NORTH};
+                        return Direction.NORTH;
                 }
             case EAST:
                 switch (wallDirection) {
-                    case EAST:
-                        return new Direction[]{Direction.NORTH, Direction.SOUTH};
+                    case EAST: case NORTHEAST:
+                        return Direction.SOUTH;
                     case SOUTHEAST:
-                        return new Direction[]{Direction.WEST};
-                    case NORTHEAST:
-                        return new Direction[]{Direction.SOUTH};
+                        return Direction.WEST;
                 }
             case WEST:
                 switch (wallDirection) {
-                    case WEST:
-                        return new Direction[]{Direction.NORTH, Direction.SOUTH};
-                    case SOUTHWEST:
-                        return new Direction[]{Direction.NORTH};
+                    case WEST: case SOUTHWEST:
+                        return Direction.NORTH;
                     case NORTHWEST:
-                        return new Direction[]{Direction.EAST};
+                        return Direction.EAST;
                 }
             default:
-                return new Direction[]{};
-
+                return Direction.CENTER;
         }
     }
 

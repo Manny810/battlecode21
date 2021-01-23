@@ -9,6 +9,8 @@ import java.util.Set;
 public class EnlightenmentCenter extends Robot {
 
     static final int ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED = 40;
+    boolean earlyGame = true;
+
 
     static final Direction[] directions = RobotPlayer.directions;
     static final RobotType[] spawnableRobot = {
@@ -53,6 +55,39 @@ public class EnlightenmentCenter extends Robot {
         start = true;
     }
 
+
+    private void runEarlyGameStrat() throws GameActionException {
+        RobotType toBuild = RobotType.SLANDERER;
+        int influence = SLANDERER_INFLUENCE;
+
+        for (Direction dir : RobotPlayer.ordinalDirections) { // Build one slanderer in the beginning
+            if (rc.canBuildRobot(toBuild, dir, influence)) {
+                rc.buildRobot(toBuild, dir, influence);
+                slandererCount++;
+                break;
+            }
+        }
+
+        toBuild = RobotType.MUCKRAKER;
+        influence = MUCKRAKER_INFLUENCE;
+        int initialMuckrakerCount = 0;
+
+        while (initialMuckrakerCount < 8) {
+            System.out.println("Make muckrakers");
+            if (rc.isReady()) {
+                if (rc.canBuildRobot(toBuild, RobotPlayer.directions[initialMuckrakerCount], influence)) {
+                    rc.buildRobot(toBuild, RobotPlayer.directions[initialMuckrakerCount], influence);
+                    muckrakerCount++;
+                }
+                initialMuckrakerCount++;
+            } else {
+                Clock.yield();
+            }
+        }
+
+        earlyGame = false;
+    }
+
     @Override
     public int getSenseRadiusSquared() {
         return ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED;
@@ -62,63 +97,70 @@ public class EnlightenmentCenter extends Robot {
     public void run() throws GameActionException {
 //        getSensedSquares();
 
-
-        double total = slandererCount + politicianCount + muckrakerCount + 1.0;
-
-        RobotType toBuild;
-        int influence;
-        if (slandererCount/total <= SLANDERER_RATIO/TOTAL_RATIO){
-            toBuild = RobotType.SLANDERER;
-            influence = SLANDERER_INFLUENCE;
-        } else if (muckrakerCount/total <= MUCKRAKER_RATIO/TOTAL_RATIO){
-            toBuild = RobotType.MUCKRAKER;
-            influence = MUCKRAKER_INFLUENCE;
+        if (earlyGame == true) {
+            runEarlyGameStrat();
         } else {
-            toBuild = RobotType.POLITICIAN;
-            influence = POLITICIAN_INFLUENCE;
-        }
 
-        for (Direction dir: directions) {
-            if (rc.canBuildRobot(toBuild, dir, influence)) {
-                rc.buildRobot(toBuild, dir, influence);
-                MapLocation newRobot = rc.getLocation().add(dir);
-                RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
-                int newRobotId = -1;
-                for (RobotInfo robot: nearbyRobots){
-                    if (robot.getLocation().equals(newRobot)){
-                        newRobotId = robot.getID();
+//            int id = this.rc.getID();
+            double total = slandererCount + politicianCount + muckrakerCount + 1.0;
+
+            RobotType toBuild;
+            int influence;
+            if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
+                toBuild = RobotType.SLANDERER;
+                influence = SLANDERER_INFLUENCE;
+            } else if (muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO) {
+                toBuild = RobotType.MUCKRAKER;
+                influence = MUCKRAKER_INFLUENCE;
+            } else {
+                toBuild = RobotType.POLITICIAN;
+                influence = POLITICIAN_INFLUENCE;
+            }
+
+            for (Direction dir : directions) {
+                if (rc.canBuildRobot(toBuild, dir, influence)) {
+                    rc.buildRobot(toBuild, dir, influence);
+                    MapLocation newRobot = rc.getLocation().add(dir);
+                    RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
+                    int newRobotId = -1;
+                    for (RobotInfo robot : nearbyRobots) {
+                        if (robot.getLocation().equals(newRobot)) {
+                            newRobotId = robot.getID();
+                        }
+                    }
+                    if (slandererCount / total < SLANDERER_RATIO / TOTAL_RATIO) {
+                        slandererCount++;
+                        slandererIds.add(newRobotId);
+                    } else if (muckrakerCount / total < MUCKRAKER_RATIO / TOTAL_RATIO) {
+                        muckrakerCount++;
+                        muckrakerIds.add(newRobotId);
+                    } else {
+                        politicianCount++;
+                        freePoliticians.add(newRobotId);
+                        politicianIds.add(newRobotId);
                     }
                 }
-                if (slandererCount / total < SLANDERER_RATIO / TOTAL_RATIO) {
-                    slandererCount++;
-                    slandererIds.add(newRobotId);
-                } else if (muckrakerCount / total < MUCKRAKER_RATIO / TOTAL_RATIO) {
-                    muckrakerCount++;
-                    muckrakerIds.add(newRobotId);
+            }
+            for (int id : muckrakerIds) {
+                if (rc.canGetFlag(id)) {
+                    readRobots(id);
                 } else {
-                    politicianCount++;
-                    freePoliticians.add(newRobotId);
-                    politicianIds.add(newRobotId);
+                    muckrakerIds.remove(id);
+                }
+            }
+            for (int id : politicianIds) {
+                if (rc.canGetFlag(id)) {
+                    readRobots(id);
+                } else {
+                    politicianIds.remove(id);
+                    MapLocation location = assignedLocation.get(id);
+                    assignedLocation.remove(id);
+                    assignedPerson.remove(location);
+                    // TODO Assign another politician to get it
                 }
             }
         }
-        for (int id : muckrakerIds){
-            if (rc.canGetFlag(id)){
-                readRobots(id);
-            } else {
-                muckrakerIds.remove(id);
-            }
-        }
-        for (int id : politicianIds){
-            if (rc.canGetFlag(id)){
-                readRobots(id);
-            } else {
-                politicianIds.remove(id);
-                MapLocation location = assignedLocation.get(id);
-                assignedLocation.remove(id);
-                assignedPerson.remove(location);
-            }
-        }
+
         setECFlag();
         System.out.println("finished turn");
 
@@ -135,6 +177,7 @@ public class EnlightenmentCenter extends Robot {
 //            Clock.yield();
 //            Clock.yield();
 //        }
+
 
     }
 

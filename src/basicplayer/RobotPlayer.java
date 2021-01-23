@@ -35,6 +35,13 @@ public strictfp class RobotPlayer {
             Direction.WEST,
     };
 
+    static final Direction[] ordinalDirections = {
+            Direction.NORTHEAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTHWEST,
+            Direction.NORTHWEST
+    };
+
     static int turnCount;
 
 
@@ -145,7 +152,8 @@ public strictfp class RobotPlayer {
                     for (int i = 0; i < 8; i++) {
                         if (rc.canMove(bugDirection) &&
                                 rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold &&
-                                rc.sensePassability(rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft())) < passabilityThreshold) { // Check if there's obstacle to left while tracing
+                                (rc.sensePassability(rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft())) < passabilityThreshold ||
+                                        (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft()))) || rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft().rotateLeft())))) { // Check if there's obstacle to left while tracing
                             System.out.println("Will turn towards " + bugDirection);
                             System.out.println("Obstacle should be on this direction " + bugDirection.rotateLeft().rotateLeft());
                             System.out.println("Obstacle coord: " + rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft()));
