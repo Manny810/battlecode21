@@ -16,18 +16,21 @@ public class Politician extends Robot {
     static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
 
     static final int POLITICIAN_ACTION_RADIUS = 9;
-    MapLocation enlightmentCenterTarget;
+    MapLocation targetLocation;
 
     public Politician(RobotController rc) throws GameActionException {
         super(rc);
         round = 0;
-        enlightmentCenterTarget = null;
+        targetLocation = null;
     }
 
     @Override
     public void run() throws GameActionException {
-        getSensedSquares();
-        System.out.println(neutralEnlightmentCenters);
+        senseSquares();
+        MapLocation location = getCommandFromEC();
+        if (location != null){
+            targetLocation = location;
+        }
         // If we have a target
         if (round < 2){
             RobotInfo[] nearbyRobots = rc.senseNearbyRobots(8);
@@ -41,25 +44,18 @@ public class Politician extends Robot {
                 }
             }
 
-        } else if (enlightmentCenterTarget != null){
-            int distance = enlightmentCenterTarget.distanceSquaredTo(rc.getLocation());
-            if (rc.canEmpower(distance)){ // if it can empower the neutral ec
-                rc.empower(distance);
-            }
-            else if (distance > POLITICIAN_ACTION_RADIUS){ // if it's too far
-                RobotPlayer.basicBugStraightLine(enlightmentCenterTarget);
-            }
-        } else { // doesn't have a target and needs to get one
-            for (MapLocation neutralEC: neutralEnlightmentCenters){
-                if (!politicianAssignments.containsKey(neutralEC)){
-                    Set<Integer> set = new HashSet<>();
-                    set.add(rc.getID());
-                    politicianAssignments.put(neutralEC, set);
-                    enlightmentCenterTarget = neutralEC;
-                    System.out.println("POOPOO " + rc.getID() + ": " + neutralEC.toString());
-                }
-            }
+        } else if (targetLocation != null){
+            RobotPlayer.basicBugStraightLine(targetLocation);
 
+            Team enemy = rc.getTeam().opponent();
+            int actionRadius = rc.getType().actionRadiusSquared;
+            RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
+            if ((attackable.length != 0 || targetLocation.distanceSquaredTo(rc.getLocation()) <= actionRadius) && rc.canEmpower(actionRadius)) {
+                System.out.println("empowering...");
+                rc.empower(actionRadius);
+                System.out.println("empowered");
+                return;
+            }
         }
 
         /**

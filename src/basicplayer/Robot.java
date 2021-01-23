@@ -14,26 +14,32 @@ public abstract class Robot {
     Team enemyTeam;
     Integer enlightmentCenterId;
 
+
+    static final int NO_FLAG_CODE = 0;
+    static final int NEUTRAL_EC_FLAG_CODE = 1;
+    static final int ENEMY_EC_FLAG_CODE = 2;
+    static final int ENEMY_POLITICIAN_FLAG_CODE = 3;
+    static final int ENEMY_SLANDERER_FLAG_CODE = 4;
+    static final int ENEMY_MUCKRAKER_FLAG_CODE = 5;
+    
+
     // a set of MapLocations with detected but unknown bots
     static Set<MapLocation> detectedBots = new HashSet<>();
 
     // a set of map locations with known muckrakers
-    static Set<MapLocation> enemyMuckRaker = new HashSet<>();
+    static Set<RobotInfo> enemyMuckRaker = new HashSet<>();
 
     // a set of map locations with known slanderers
-    static Set<MapLocation> confirmedSlanderers = new HashSet<>();
+    static Set<RobotInfo> confirmedSlanderers = new HashSet<>();
 
     // a set of map locations of politicians or potentially slanderers
-    static Set<MapLocation> enemyPoliticians = new HashSet<>();
+    static Set<RobotInfo> enemyPoliticians = new HashSet<>();
 
     // a set of map locations with neutral enlightment centers
-    static Set<MapLocation> neutralEnlightmentCenters = new HashSet<>();
+    static Set<RobotInfo> neutralEnlightmentCenters = new HashSet<>();
 
     // a set of map locations with enemy enlightment centers
-    static Set<MapLocation> enemyEnlightmentCenters = new HashSet<>();
-
-    // a dictionary mapping a map location to it's passability
-    static Map<MapLocation, Double> passabilities = new HashMap<>();
+    static Set<RobotInfo> enemyEnlightmentCenters = new HashSet<>();
 
 
     public Direction findWallDirection(Direction[] blockedDirections) {
@@ -136,19 +142,12 @@ public abstract class Robot {
     public abstract void run() throws GameActionException;
     public abstract int getSenseRadiusSquared();
 
-    public Set<MapLocation> getSensedSquares() throws GameActionException {
-        Set<MapLocation> newDetectedBots = new HashSet<>();
-        Set<MapLocation> newNeutralEnlightmentCenters = new HashSet<>();
-        Set<MapLocation> newEnemyEnlightmentCenters = new HashSet<>();
-        Set<MapLocation> newEnemyMuckRaker = new HashSet<>();
-        Set<MapLocation> newConfirmedSlanderers = new HashSet<>();
-        Set<MapLocation> newEnemyPoliticians = new HashSet<>();
-
+    public void senseSquares() throws GameActionException {
         // detect robots
         MapLocation[] curDetectedRobots = rc.detectNearbyRobots();
 
         for (MapLocation robotLocation: curDetectedRobots){
-            newDetectedBots.add(robotLocation);
+            detectedBots.add(robotLocation);
         }
 
         // sense robots
@@ -160,62 +159,154 @@ public abstract class Robot {
             MapLocation location = robot.getLocation();
 
             // NOTE: This could create an error if the location is not in detected. This should never happen because all robots that are sensed should have already been detected.
-            newDetectedBots.remove(location);
+            detectedBots.remove(location);
 
             // if we saw a neutral piece -> neutral Enlightment Center
             if (team.equals(Team.NEUTRAL)){
-                newNeutralEnlightmentCenters.add(location);
+                neutralEnlightmentCenters.add(robot);
             }
             // if the robot is an enemy
             else if (!rc.getTeam().equals(team)){
                 switch(type){
-                    case ENLIGHTENMENT_CENTER: newEnemyEnlightmentCenters.add(location); break;
-                    case MUCKRAKER: newEnemyMuckRaker.add(location); break;
-                    case SLANDERER: newConfirmedSlanderers.add(location); break;
-                    case POLITICIAN: newEnemyPoliticians.add(location); break;
+                    case ENLIGHTENMENT_CENTER: enemyEnlightmentCenters.add(robot); break;
+                    case MUCKRAKER: enemyMuckRaker.add(robot); break;
+                    case SLANDERER: confirmedSlanderers.add(robot); break;
+                    case POLITICIAN: enemyPoliticians.add(robot); break;
                 }
 
             }
         }
-        detectedBots.addAll(newDetectedBots);
-        neutralEnlightmentCenters.addAll(newNeutralEnlightmentCenters);
-        enemyEnlightmentCenters.addAll(newEnemyEnlightmentCenters);
-        enemyMuckRaker.addAll(newEnemyMuckRaker);
-        confirmedSlanderers.addAll(newConfirmedSlanderers);
-        enemyPoliticians.addAll(newEnemyPoliticians);
 
-        // sense passabilities
-        MapLocation curLocation = rc.getLocation();
-        int radiusSquared = getSenseRadiusSquared();
-        Set<MapLocation> sensedSquares = new HashSet<>();
-        curLocation.translate(-radiusSquared, -radiusSquared);
-        /**
-        for (int x = 0; x <= 2*radiusSquared; x++){
-            for (int y = 0; y <= 2*radiusSquared; y++){
-                // Check all sets of robots to erase any information that is no longer valid
-                if (detectedBots.contains(curLocation) && !newDetectedBots.contains(curLocation)) detectedBots.remove(curLocation);
-                if (neutralEnlightmentCenters.contains(curLocation) && !newNeutralEnlightmentCenters.contains(curLocation)) neutralEnlightmentCenters.remove(curLocation);
-                if (enemyEnlightmentCenters.contains(curLocation) && !newEnemyEnlightmentCenters.contains(curLocation)) enemyEnlightmentCenters.remove(curLocation);
-                if (enemyMuckRaker.contains(curLocation) && !newEnemyMuckRaker.contains(curLocation)) enemyMuckRaker.remove(curLocation);
-                if (confirmedSlanderers.contains(curLocation) && !newConfirmedSlanderers.contains(curLocation)) confirmedSlanderers.remove(curLocation);
-                if (enemyPoliticians.contains(curLocation) && !newEnemyPoliticians.contains(curLocation)) enemyPoliticians.remove(curLocation);
-
-                // if passability has not been sensed, add that value to the map
-                if (rc.canSenseLocation(curLocation)){
-                    if (!passabilities.containsKey(curLocation)) {
-                        double passability = rc.sensePassability(curLocation);
-                        passabilities.put(curLocation, passability);
-                    }
-                }
-
-                // check to see if spaces we though robots were in are no longer there
-
-                curLocation.translate(1,0);
+        if (neutralEnlightmentCenters.size() != 0){
+            for (RobotInfo robot: neutralEnlightmentCenters){
+                flagRobot(robot);
+                neutralEnlightmentCenters.remove(robot);
+                break;
             }
-            curLocation.translate(-2*radiusSquared, 1);
+        } else if (enemyEnlightmentCenters.size() != 0){
+            for (RobotInfo robot: enemyEnlightmentCenters){
+                flagRobot(robot);
+                enemyEnlightmentCenters.remove(robot);
+                break;
+            }
+        } else if (enemyPoliticians.size() != 0){
+            for (RobotInfo robot: enemyPoliticians){
+                flagRobot(robot);
+                enemyPoliticians.remove(robot);
+                break;
+            }
+        } else if (confirmedSlanderers.size() != 0){
+            for (RobotInfo robot: confirmedSlanderers){
+                flagRobot(robot);
+                confirmedSlanderers.remove(robot);
+                break;
+            }
+        } else if (enemyMuckRaker.size() != 0){
+            for (RobotInfo robot: enemyMuckRaker){
+                flagRobot(robot);
+                enemyMuckRaker.remove(robot);
+                break;
+            }
+        } else {
+            rc.setFlag(0);
         }
-         **/
 
-        return sensedSquares;
     }
+
+    public void flagRobot(RobotInfo robot) throws GameActionException {
+        MapLocation location = robot.getLocation();
+        RobotType type = robot.getType();
+        Team team = robot.getTeam();
+        int flag = locationToFlag(location) + 128 * 128 * typeToFlag(type, team);
+        if (rc.canSetFlag(flag)) {
+            rc.setFlag(flag);
+        }
+    }
+
+    public int typeToFlag(RobotType type, Team team){
+        if (team.equals(Team.NEUTRAL)){
+            return NEUTRAL_EC_FLAG_CODE;
+        }
+        switch (type) {
+            case ENLIGHTENMENT_CENTER:
+                return ENEMY_EC_FLAG_CODE;
+            case POLITICIAN:
+                return ENEMY_POLITICIAN_FLAG_CODE;
+            case SLANDERER:
+                return ENEMY_SLANDERER_FLAG_CODE;
+            case MUCKRAKER:
+                return ENEMY_MUCKRAKER_FLAG_CODE;
+        }
+
+        return 0;
+    }
+
+    public int locationToFlag(MapLocation location){
+        int x = location.x;
+        int y = location.y;
+        int encodedLocation = (x%128) * 128 + (y%128);
+        return encodedLocation;
+    }
+
+    public MapLocation getLocationFromFlag(int flag){
+        int y = flag % 128;
+        int x = (flag / 128) % 128;
+        int extraInformation = flag / 128 / 128;
+
+        MapLocation currentLocation = rc.getLocation();
+        int offsetX = currentLocation.x / 128;
+        int offsetY = currentLocation.y / 128;
+        MapLocation actualLocation = new MapLocation(offsetX * 128 + x, offsetY * 128 + y);
+
+        MapLocation alternative = actualLocation.translate(-128, 0);
+        if(rc.getLocation().distanceSquaredTo(alternative) < rc.getLocation().distanceSquaredTo(actualLocation)) {
+            actualLocation = alternative;
+        }
+        alternative = actualLocation.translate(128, 0);
+        if(rc.getLocation().distanceSquaredTo(alternative) < rc.getLocation().distanceSquaredTo(actualLocation)) {
+            actualLocation = alternative;
+        }
+
+        alternative = actualLocation.translate(0, -128);
+        if(rc.getLocation().distanceSquaredTo(alternative) < rc.getLocation().distanceSquaredTo(actualLocation)) {
+            actualLocation = alternative;
+        }
+
+        alternative = actualLocation.translate(0, 128);
+        if(rc.getLocation().distanceSquaredTo(alternative) < rc.getLocation().distanceSquaredTo(actualLocation)) {
+            actualLocation = alternative;
+        }
+
+        return actualLocation;
+    }
+
+
+
+    public MapLocation getCommandFromEC() throws GameActionException {
+        int flag = rc.getFlag(enlightmentCenterId);
+        if ((flag / 2^23) == 0){
+            return null;
+        } else {
+            MapLocation location = getLocationFromFlag(flag);
+            int extraInformation = getExtraInfoFromFlag(flag);
+
+            int idHash = extraInformation % 256;
+            if (extraInformation / 256 == 0){
+                return location;
+            } else {
+                if (rc.getID()/256 == idHash){
+                    return location;
+                }
+                else{
+                    return null;
+                }
+            }
+        }
+    }
+
+    public Integer getExtraInfoFromFlag(int flag) {
+        return flag / 128 / 128;
+    }
+
+
 }

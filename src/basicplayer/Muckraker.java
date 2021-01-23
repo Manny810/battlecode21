@@ -35,6 +35,8 @@ public class Muckraker extends Robot {
         }
 
         while (true) {
+            senseSquares();
+            System.out.println(neutralEnlightmentCenters);
             if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) {
                 if (rc.canMove(muckrakerDirection)) {
                     rc.move(muckrakerDirection);
