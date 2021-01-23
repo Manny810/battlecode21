@@ -119,7 +119,9 @@ public class EnlightenmentCenter extends Robot {
                 assignedPerson.remove(location);
             }
         }
-        setECFlag(); 
+        setECFlag();
+        System.out.println("finished turn");
+
 
 ////      Testing out diagonal directions
 //        RobotType toBuild = RobotType.SLANDERER;
@@ -151,6 +153,9 @@ public class EnlightenmentCenter extends Robot {
                         flag += 1 * 128 * 128 * 256 * 2; // is a command
 
                         rc.setFlag(flag);
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
 
                         break;
                     }
@@ -187,6 +192,7 @@ public class EnlightenmentCenter extends Robot {
         int extraInfo = getExtraInfoFromFlag(flag);
 
         if (extraInfo == 1){
+            System.out.println("Got N EC Flag from " + id);
             neutralECLocations.add(location);
         } else if (extraInfo == 2) {
             enemyECLocations.add(location);
@@ -196,6 +202,10 @@ public class EnlightenmentCenter extends Robot {
             enemySlandererLocations.add(location);
         } else if (extraInfo == 5) {
             enemyMuckrakerLocations.add(location);
+        } else {
+            System.out.println("Didn't read anything");
+            System.out.println("ID: " + id);
+            System.out.println("Flag: " + flag);
         }
     }
 

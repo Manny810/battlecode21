@@ -24,22 +24,22 @@ public abstract class Robot {
     
 
     // a set of MapLocations with detected but unknown bots
-    static Set<MapLocation> detectedBots = new HashSet<>();
+    Set<MapLocation> detectedBots = new HashSet<>();
 
     // a set of map locations with known muckrakers
-    static Set<RobotInfo> enemyMuckRaker = new HashSet<>();
+    Set<RobotInfo> enemyMuckRaker = new HashSet<>();
 
     // a set of map locations with known slanderers
-    static Set<RobotInfo> confirmedSlanderers = new HashSet<>();
+    Set<RobotInfo> confirmedSlanderers = new HashSet<>();
 
     // a set of map locations of politicians or potentially slanderers
-    static Set<RobotInfo> enemyPoliticians = new HashSet<>();
+    Set<RobotInfo> enemyPoliticians = new HashSet<>();
 
     // a set of map locations with neutral enlightment centers
-    static Set<RobotInfo> neutralEnlightmentCenters = new HashSet<>();
+    Set<RobotInfo> neutralEnlightmentCenters = new HashSet<>();
 
     // a set of map locations with enemy enlightment centers
-    static Set<RobotInfo> enemyEnlightmentCenters = new HashSet<>();
+    Set<RobotInfo> enemyEnlightmentCenters = new HashSet<>();
 
 
     public Direction findWallDirection(Direction[] blockedDirections) {
@@ -220,6 +220,7 @@ public abstract class Robot {
         int flag = locationToFlag(location) + 128 * 128 * typeToFlag(type, team);
         if (rc.canSetFlag(flag)) {
             rc.setFlag(flag);
+            System.out.println("set flag to " + flag);
         }
     }
 
@@ -294,7 +295,7 @@ public abstract class Robot {
             if (extraInformation / 256 == 0){
                 return location;
             } else {
-                if (rc.getID()/256 == idHash){
+                if (rc.getID()%256 == idHash){
                     return location;
                 }
                 else{
