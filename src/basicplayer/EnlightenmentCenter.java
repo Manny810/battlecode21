@@ -7,6 +7,8 @@ import java.util.Map;
 public class EnlightenmentCenter extends Robot {
 
     static final int ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED = 40;
+    boolean earlyGame = true;
+
 
     static final Direction[] directions = RobotPlayer.directions;
     static final RobotType[] spawnableRobot = {
@@ -34,6 +36,39 @@ public class EnlightenmentCenter extends Robot {
         super(rc);
     }
 
+
+    private void runEarlyGameStrat() throws GameActionException {
+        RobotType toBuild = RobotType.SLANDERER;
+        int influence = SLANDERER_INFLUENCE;
+
+        for (Direction dir : RobotPlayer.ordinalDirections) { // Build one slanderer in the beginning
+            if (rc.canBuildRobot(toBuild, dir, influence)) {
+                rc.buildRobot(toBuild, dir, influence);
+                slandererCount++;
+                break;
+            }
+        }
+
+        toBuild = RobotType.MUCKRAKER;
+        influence = MUCKRAKER_INFLUENCE;
+        int initialMuckrakerCount = 0;
+
+        while (initialMuckrakerCount < 8) {
+            System.out.println("Make muckrakers");
+            if (rc.isReady()) {
+                if (rc.canBuildRobot(toBuild, RobotPlayer.directions[initialMuckrakerCount], influence)) {
+                    rc.buildRobot(toBuild, RobotPlayer.directions[initialMuckrakerCount], influence);
+                    muckrakerCount++;
+                }
+                initialMuckrakerCount++;
+            } else {
+                Clock.yield();
+            }
+        }
+
+        earlyGame = false;
+    }
+
     @Override
     public int getSenseRadiusSquared() {
         return ENLIGHTMENT_CENTER_SENSOR_RADIUS_SQUARED;
@@ -42,33 +77,40 @@ public class EnlightenmentCenter extends Robot {
     @Override
     public void run() throws GameActionException {
 //        getSensedSquares();
-        int id = this.rc.getID();
 
-
-        double total = slandererCount + politicianCount + muckrakerCount + 1.0;
-
-        RobotType toBuild;
-        int influence;
-        if (slandererCount/total <= SLANDERER_RATIO/TOTAL_RATIO){
-            toBuild = RobotType.SLANDERER;
-            influence = SLANDERER_INFLUENCE;
-        } else if (muckrakerCount/total <= MUCKRAKER_RATIO/TOTAL_RATIO){
-            toBuild = RobotType.MUCKRAKER;
-            influence = MUCKRAKER_INFLUENCE;
+        if (earlyGame == true) {
+            runEarlyGameStrat();
         } else {
-            toBuild = RobotType.POLITICIAN;
-            influence = POLITICIAN_INFLUENCE;
-        }
 
-        for (Direction dir: directions) {
-            if (rc.canBuildRobot(toBuild, dir, influence)) {
-                rc.buildRobot(toBuild, dir, influence);
-                if (slandererCount / total < SLANDERER_RATIO / TOTAL_RATIO) {
-                    slandererCount++;
-                } else if (muckrakerCount / total < MUCKRAKER_RATIO / TOTAL_RATIO) {
-                    muckrakerCount++;
-                } else {
-                    politicianCount++;
+
+            int id = this.rc.getID();
+
+
+            double total = slandererCount + politicianCount + muckrakerCount + 1.0;
+
+            RobotType toBuild;
+            int influence;
+            if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
+                toBuild = RobotType.SLANDERER;
+                influence = SLANDERER_INFLUENCE;
+            } else if (muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO) {
+                toBuild = RobotType.MUCKRAKER;
+                influence = MUCKRAKER_INFLUENCE;
+            } else {
+                toBuild = RobotType.POLITICIAN;
+                influence = POLITICIAN_INFLUENCE;
+            }
+
+            for (Direction dir : directions) {
+                if (rc.canBuildRobot(toBuild, dir, influence)) {
+                    rc.buildRobot(toBuild, dir, influence);
+                    if (slandererCount / total < SLANDERER_RATIO / TOTAL_RATIO) {
+                        slandererCount++;
+                    } else if (muckrakerCount / total < MUCKRAKER_RATIO / TOTAL_RATIO) {
+                        muckrakerCount++;
+                    } else {
+                        politicianCount++;
+                    }
                 }
             }
         }
