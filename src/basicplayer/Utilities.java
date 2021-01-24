@@ -70,5 +70,14 @@ public class Utilities {
 
     }
 
+
+    static Direction leftHandSideForCurrentDirection(Direction bugDirection) {
+        if (bugDirection.ordinal()%2 == 0) { // bugDirection is cardinal (N,E,S,W)
+            return bugDirection.rotateLeft().rotateLeft();
+        } else { //bugDirection is ordinal (NE,SE,SW,NW)
+            return bugDirection.rotateLeft().rotateLeft().rotateLeft();
+        }
+    }
+
 }
 
