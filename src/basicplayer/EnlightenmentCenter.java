@@ -163,24 +163,30 @@ public class EnlightenmentCenter extends Robot {
                     }
                 }
             }
+            Set<Integer> remove = new HashSet<>();
+
             for (int id : muckrakerIds) {
                 if (rc.canGetFlag(id)) {
                     readRobots(id);
                 } else {
-                    muckrakerIds.remove(id);
+                    System.out.println("Couldn't read " + id);
+                    remove.add(id);
                 }
             }
+            muckrakerIds.removeAll(remove);
+
             for (int id : politicianIds) {
                 if (rc.canGetFlag(id)) {
                     readRobots(id);
                 } else {
-                    politicianIds.remove(id);
+                    remove.add(id);
                     MapLocation location = assignedLocation.get(id);
                     assignedLocation.remove(id);
                     assignedPerson.remove(location);
                     // TODO Assign another politician to get it
                 }
             }
+            politicianIds.removeAll(remove);
         }
 
         setECFlag();
@@ -305,7 +311,7 @@ public class EnlightenmentCenter extends Robot {
         } else {
             System.out.println("Didn't read anything");
             System.out.println("ID: " + id);
-            System.out.println("Flag: " + flag);
+            System.out.println("Extra Info: " + extraInfo);
         }
     }
 
