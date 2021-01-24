@@ -214,7 +214,8 @@ public abstract class Robot {
         int flag = locationToFlag(location) + 128 * 128 * typeToFlag(type, team);
         if (rc.canSetFlag(flag)) {
             rc.setFlag(flag);
-            System.out.println("set flag to " + flag);
+            System.out.println("Sending Type: " + robot.getType().toString());
+            System.out.println("at " + robot.getLocation().toString());
         }
     }
 
