@@ -1,9 +1,7 @@
 package basicplayer;
 import battlecode.common.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 
 public class EnlightenmentCenter extends Robot {
@@ -13,6 +11,7 @@ public class EnlightenmentCenter extends Robot {
 
 
     static final Direction[] directions = RobotPlayer.directions;
+    final Set<Direction> playableDirections = new HashSet<>(Arrays.asList(directions));
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
             RobotType.SLANDERER,
@@ -82,6 +81,9 @@ public class EnlightenmentCenter extends Robot {
         int initialMuckrakerCount = 0;
 
         while (initialMuckrakerCount < 8) {
+            senseEC();
+            System.out.println("Make muckrakers");
+            setECFlag();
             if (rc.isReady()) {
                 Direction dir = RobotPlayer.directions[initialMuckrakerCount];
                 if (rc.canBuildRobot(toBuild, dir, influence)) {
@@ -104,7 +106,7 @@ public class EnlightenmentCenter extends Robot {
         }
 
 
-
+        senseEC();
         earlyGame = false;
     }
 
@@ -137,7 +139,7 @@ public class EnlightenmentCenter extends Robot {
                 influence = POLITICIAN_INFLUENCE;
             }
 
-            for (Direction dir : directions) {
+            for (Direction dir : playableDirections) {
                 if (rc.canBuildRobot(toBuild, dir, influence)) {
                     rc.buildRobot(toBuild, dir, influence);
                     MapLocation newRobot = rc.getLocation().add(dir);
@@ -201,6 +203,39 @@ public class EnlightenmentCenter extends Robot {
 
     }
 
+    private void senseEC() throws GameActionException {
+        int senseRadius = (int) Math.floor(Math.pow(getSenseRadiusSquared(), .5));
+        System.out.println("radius: " + senseRadius);
+        MapLocation north = rc.getLocation().translate(0,senseRadius);
+        if (!rc.onTheMap(north)){
+            playableDirections.remove(Direction.NORTH);
+            playableDirections.remove(Direction.NORTHWEST);
+            playableDirections.remove(Direction.NORTHEAST);
+        }
+
+        MapLocation east = rc.getLocation().translate(senseRadius,0);
+        if (!rc.onTheMap(east)){
+            playableDirections.remove(Direction.SOUTHEAST);
+            playableDirections.remove(Direction.EAST);
+            playableDirections.remove(Direction.NORTHEAST);
+        }
+
+        MapLocation south = rc.getLocation().translate(0,-senseRadius);
+        if (!rc.onTheMap(south)){
+            playableDirections.remove(Direction.SOUTHEAST);
+            playableDirections.remove(Direction.SOUTH);
+            playableDirections.remove(Direction.SOUTHWEST);
+        }
+
+        MapLocation west = rc.getLocation().translate(-senseRadius,0);
+        if (!rc.onTheMap(north)){
+            playableDirections.remove(Direction.WEST);
+            playableDirections.remove(Direction.NORTHWEST);
+            playableDirections.remove(Direction.SOUTHWEST);
+        }
+        System.out.println("Playable Directions: " + playableDirections.toString());
+    }
+
     private void setECFlag() throws GameActionException {
         if (neutralECLocations.size() != 0){
             for (MapLocation location: neutralECLocations){
@@ -208,6 +243,7 @@ public class EnlightenmentCenter extends Robot {
                     for (Integer id: freePoliticians){
                         assignedPerson.put(location, id);
                         assignedLocation.put(id, location);
+                        freePoliticians.remove(id);
 
                         int flag = 0;
                         flag += locationToFlag(location); // location
@@ -229,6 +265,7 @@ public class EnlightenmentCenter extends Robot {
             for (MapLocation location: enemyECLocations){
                 if (!assignedPerson.containsKey(location)){
                     for (Integer id: freePoliticians){
+                        freePoliticians.remove(id);
                         assignedPerson.put(location, id);
                         assignedLocation.put(id, location);
 
