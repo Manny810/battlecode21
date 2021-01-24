@@ -177,7 +177,9 @@ public strictfp class RobotPlayer {
                     System.out.println("Moved on the line towards target" + d);
                     bugDirection = null;
                 }
-                else if (rc.isLocationOccupied((rc.getLocation()).add(d)) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
+                else if (Utilities.checkTypeAtLocation(rc, d, RobotType.MUCKRAKER) &&
+                        rc.isLocationOccupied((rc.getLocation()).add(d)) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
+
                     Clock.yield();
                 }
                 else { // Can't move towards targetLocation
