@@ -82,7 +82,6 @@ public class EnlightenmentCenter extends Robot {
         int initialMuckrakerCount = 0;
 
         while (initialMuckrakerCount < 8) {
-            System.out.println("Make muckrakers");
             if (rc.isReady()) {
                 Direction dir = RobotPlayer.directions[initialMuckrakerCount];
                 if (rc.canBuildRobot(toBuild, dir, influence)) {
@@ -103,6 +102,8 @@ public class EnlightenmentCenter extends Robot {
                 Clock.yield();
             }
         }
+
+
 
         earlyGame = false;
     }

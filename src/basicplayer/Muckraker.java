@@ -54,7 +54,6 @@ public class Muckraker extends Robot {
                         rc.detectNearbyRobots();
                         RobotInfo[] sensedRobots = rc.senseNearbyRobots();
                         for (RobotInfo robot : sensedRobots) {
-                            System.out.println("sensing robots");
                             if (robot.team == Team.NEUTRAL) {
                                 MapLocation neutralECLocation = robot.location;
                                 // add neutralECLocation to some dictionary
