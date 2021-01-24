@@ -83,7 +83,7 @@ public class Utilities {
         RobotInfo robot = rc.senseRobotAtLocation(rc.getLocation().add(dir));
         System.out.println(dir);
         if (robot != null) {
-            System.out.println(robot.location.toString()));
+            System.out.println(robot.location.toString());
             return robot.type.equals(type);
         } else {
             return false;
