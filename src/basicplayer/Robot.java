@@ -21,6 +21,8 @@ public abstract class Robot {
     static final int ENEMY_POLITICIAN_FLAG_CODE = 3;
     static final int ENEMY_SLANDERER_FLAG_CODE = 4;
     static final int ENEMY_MUCKRAKER_FLAG_CODE = 5;
+
+    static final int SLANDERER_FLAG_CODE = 1;
     
 
     // a set of MapLocations with detected but unknown bots
@@ -167,8 +169,9 @@ public abstract class Robot {
 
             }
         }
-
-        if (neutralEnlightmentCenters.size() != 0){
+        if (rc.getType().equals(RobotType.SLANDERER)){
+            rc.setFlag(SLANDERER_FLAG_CODE);
+        } else if (neutralEnlightmentCenters.size() != 0){
             for (RobotInfo robot: neutralEnlightmentCenters){
                 flagRobot(robot);
                 neutralEnlightmentCenters.remove(robot);

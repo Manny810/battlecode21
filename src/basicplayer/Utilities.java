@@ -95,8 +95,10 @@ public class Utilities {
         if (robot!= null) {
             int id = robot.ID;
             int flag = rc.getFlag(id);
+            return (flag != Robot.SLANDERER_FLAG_CODE) || !robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER);
 
         }
+        return true;
 
     }
 
