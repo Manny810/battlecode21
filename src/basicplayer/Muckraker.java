@@ -35,7 +35,16 @@ public class Muckraker extends Robot {
 
         while (true) {
             senseSquares();
+
             if (rc.isReady()) {
+                Team enemy = rc.getTeam().opponent();
+                int actionRadius = rc.getType().actionRadiusSquared;
+                RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
+                for (RobotInfo attackableRobot : attackable) {
+                    if (rc.canExpose(attackableRobot.ID)) {
+                        rc.expose(attackableRobot.ID);
+                    }
+                }
                 //System.out.println(rc.onTheMap(rc.getLocation().add(muckrakerDirection)));
                 if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) { // Location is on the map
                     //System.out.println("It's on the map bro");
@@ -99,6 +108,8 @@ public class Muckraker extends Robot {
                 //System.out.println("Not ready");
                 Clock.yield();
             }
+
+
 
         }
     }

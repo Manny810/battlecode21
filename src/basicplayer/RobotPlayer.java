@@ -146,6 +146,7 @@ public strictfp class RobotPlayer {
             if (rc.getLocation().equals(targetLocation)) {
                 System.out.println("I have reached the target location");
                 // perform some action based on the unit
+                break;
             } else if (rc.isReady()) { // Moving on the line  towards targetLocation
                 if (tracingObstacle) {
                     System.out.println("Now tracing obstacle");
