@@ -228,6 +228,7 @@ public class EnlightenmentCenter extends Robot {
             for (MapLocation location: enemyECLocations){
                 if (!assignedPerson.containsKey(location)){
                     for (Integer id: freePoliticians){
+                        freePoliticians.remove(id);
                         assignedPerson.put(location, id);
                         assignedLocation.put(id, location);
 
