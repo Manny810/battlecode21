@@ -50,7 +50,7 @@ public class Politician extends Robot {
 
         } else if (targetLocation != null){
             System.out.println("My target Location Bro: " + location.toString());
-            RobotPlayer.basicBugStraightLine(targetLocation);
+            RobotPlayer.basicBugStraightLine(targetLocation, true);
 
             Team enemy = rc.getTeam().opponent();
             int actionRadius = rc.getType().actionRadiusSquared;

@@ -137,13 +137,13 @@ public strictfp class RobotPlayer {
     private static final double passabilityThreshold = 0.5;
     static Direction bugDirection = null;
 
-    static void basicBugStraightLine(MapLocation targetLocation) throws GameActionException {
+    static void basicBugStraightLine(MapLocation targetLocation, boolean checkWithinSenseRadius) throws GameActionException {
         MapLocation startingLocation = rc.getLocation();
         boolean tracingObstacle = false;
         while (true) {
             Direction d = rc.getLocation().directionTo(targetLocation);
             System.out.println("Direction to target" + d);
-            if (rc.getLocation().equals(targetLocation)) {
+            if (rc.getLocation().equals(targetLocation) || (checkWithinSenseRadius && (rc.getLocation().isWithinDistanceSquared(targetLocation, rc.getType().actionRadiusSquared)))) { // Has reached target location or at least within sensor radius
                 System.out.println("I have reached the target location");
                 // perform some action based on the unit
                 break;
