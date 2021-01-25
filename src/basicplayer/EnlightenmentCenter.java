@@ -19,8 +19,8 @@ public class EnlightenmentCenter extends Robot {
     };
 
     static final double POLITICIAN_RATIO = 3.0;
-    static final double SLANDERER_RATIO = 1.0;
-    static final double MUCKRAKER_RATIO = 6.0;
+    static final double SLANDERER_RATIO = 2.0;
+    static final double MUCKRAKER_RATIO = 5.0;
     static final double TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1.0;
 
     static final int SLANDERER_INFLUENCE = 100;
