@@ -44,6 +44,11 @@ public class Muckraker extends Robot {
                     if (rc.canExpose(attackableRobot.ID)) {
                         rc.expose(attackableRobot.ID);
                     }
+                    if (attackableRobot.type == RobotType.ENLIGHTENMENT_CENTER && attackableRobot.team == allyTeam) {
+                        MapLocation ecLocation = attackableRobot.location;
+                        Direction oppositeDirection = rc.getLocation().directionTo(ecLocation).opposite();
+                        muckrakerDirection = spawnDirection;
+                    }
                 }
                 //System.out.println(rc.onTheMap(rc.getLocation().add(muckrakerDirection)));
                 if (rc.onTheMap(rc.getLocation().add(muckrakerDirection))) { // Location is on the map
@@ -116,7 +121,6 @@ public class Muckraker extends Robot {
 
     @Override
     public void run() throws GameActionException {
-
         exploreRadiallyOutward();
 //        Team enemy = rc.getTeam().opponent();
 //        int actionRadius = rc.getType().actionRadiusSquared;
