@@ -310,7 +310,7 @@ public class EnlightenmentCenter extends Robot {
         }
         System.out.println("Not setting flag to anything");
         System.out.println("enemyECLocations size: " + enemyECLocations.size());
-        System.out.println("neutral EC Locations size: " + neutralECLocations.size()); 
+        System.out.println("neutral EC Locations size: " + neutralECLocations.size());
         rc.setFlag(0);
         return -1;
     }
