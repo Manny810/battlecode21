@@ -84,7 +84,10 @@ public class EnlightenmentCenter extends Robot {
         while (initialMuckrakerCount < 8) {
             senseEC();
             System.out.println("Make muckrakers");
-            setECFlag();
+            int assigned = setECFlag();
+            if (assigned != -1){
+                freePoliticians.remove(assigned);
+            }
             if (rc.isReady()) {
                 Direction dir = RobotPlayer.directions[initialMuckrakerCount];
                 if (rc.canBuildRobot(toBuild, dir, influence)) {
@@ -168,26 +171,36 @@ public class EnlightenmentCenter extends Robot {
                     }
                 }
             }
+            Set<Integer> remove = new HashSet<>();
+
             for (int id : muckrakerIds) {
                 if (rc.canGetFlag(id)) {
                     readRobots(id);
                 } else {
-                    muckrakerIds.remove(id);
+                    System.out.println("Couldn't read " + id);
+                    remove.add(id);
                 }
             }
+            muckrakerIds.removeAll(remove);
+
             for (int id : politicianIds) {
                 if (rc.canGetFlag(id)) {
                     readRobots(id);
                 } else {
-                    politicianIds.remove(id);
+                    remove.add(id);
                     MapLocation location = assignedLocation.get(id);
                     assignedLocation.remove(id);
                     assignedPerson.remove(location);
-                    // TODO Assign another politician to get it
                 }
             }
+            politicianIds.removeAll(remove);
         }
         setECFlag();
+
+        int assigned = setECFlag();
+        if (assigned != -1){
+            freePoliticians.remove(assigned);
+        }
         System.out.println("finished turn");
         int bidAmount = slandererCount;
         if (rc.canBid(bidAmount)) {
@@ -232,14 +245,19 @@ public class EnlightenmentCenter extends Robot {
         System.out.println("Playable Directions: " + playableDirections.toString());
     }
 
-    private void setECFlag() throws GameActionException {
+    private int setECFlag() throws GameActionException {
+        // TODO bug because since neutral EC locations never removed this means we never send to enemy EC locations if we see a single N EC
+        Set<Integer> remove = new HashSet<>();
+        if (freePoliticians.size() == 0){
+            System.out.println("No more politicians");
+        }
         if (neutralECLocations.size() != 0){
             for (MapLocation location: neutralECLocations){
                 if (!assignedPerson.containsKey(location)){
                     for (Integer id: freePoliticians){
                         assignedPerson.put(location, id);
                         assignedLocation.put(id, location);
-                        freePoliticians.remove(id);
+                        remove.add(id);
 
                         int flag = 0;
                         flag += locationToFlag(location); // location
@@ -252,16 +270,21 @@ public class EnlightenmentCenter extends Robot {
                         System.out.println("Location: " + location.toString());
                         System.out.println("My Flag" + flag);
 
-                        break;
+                        return id;
+
                     }
-                    break;
+
                 }
+
             }
-        } else if (enemyECLocations.size() != 0){
+        }
+
+        if (enemyECLocations.size() != 0){
             for (MapLocation location: enemyECLocations){
                 if (!assignedPerson.containsKey(location)){
                     for (Integer id: freePoliticians){
-                        freePoliticians.remove(id);
+
+                        remove.add(id);
                         assignedPerson.put(location, id);
                         assignedLocation.put(id, location);
 
@@ -272,14 +295,22 @@ public class EnlightenmentCenter extends Robot {
                         flag += 1 * 128 * 128 * 256 * 2; // is a command
 
                         rc.setFlag(flag);
-                        break;
+
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
+                        return id;
                     }
-                    break;
+
                 }
+
             }
-        } else {
-            rc.setFlag(0);
         }
+        System.out.println("Not setting flag to anything");
+        System.out.println("enemyECLocations size: " + enemyECLocations.size());
+        System.out.println("neutral EC Locations size: " + neutralECLocations.size()); 
+        rc.setFlag(0);
+        return -1;
     }
 
     private void readRobots(int id) throws GameActionException {
@@ -288,20 +319,31 @@ public class EnlightenmentCenter extends Robot {
         int extraInfo = getExtraInfoFromFlag(flag);
 
         if (extraInfo == 1){
-            System.out.println("Got N EC Flag from " + id);
+            System.out.println("Got neutral EC");
+            System.out.println("ID: " + id);
+            System.out.println("Extra Info: " + extraInfo);
             neutralECLocations.add(location);
         } else if (extraInfo == 2) {
             enemyECLocations.add(location);
+            System.out.println("Got enemy EC");
+            System.out.println("ID: " + id);
+            System.out.println("Extra Info: " + extraInfo);
         } else if (extraInfo == 3) {
             enemyPoliticianLocations.add(location);
+            System.out.println("Got politician");
+            System.out.println("ID: " + id);
+            System.out.println("Extra Info: " + extraInfo);
         } else if (extraInfo == 4) {
             enemySlandererLocations.add(location);
+            System.out.println("Got Slanderer");
+            System.out.println("ID: " + id);
+            System.out.println("Extra Info: " + extraInfo);
         } else if (extraInfo == 5) {
             enemyMuckrakerLocations.add(location);
         } else {
             System.out.println("Didn't read anything");
             System.out.println("ID: " + id);
-            System.out.println("Flag: " + flag);
+            System.out.println("Extra Info: " + extraInfo);
         }
     }
 

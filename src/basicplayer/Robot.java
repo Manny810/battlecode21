@@ -301,7 +301,7 @@ public abstract class Robot {
     }
 
     public Integer getExtraInfoFromFlag(int flag) {
-        return flag / 128 / 128;
+        return ((flag / 128) / 128);
     }
 
 
