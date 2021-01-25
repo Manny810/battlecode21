@@ -89,6 +89,7 @@ public class Slanderer extends Robot {
 
     @Override
     public void run() throws GameActionException {
+        
 
         if (!movedAwayFromEC) {
             System.out.println("Currently moving one unit away from the EC");
