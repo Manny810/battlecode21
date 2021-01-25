@@ -200,10 +200,8 @@ public class EnlightenmentCenter extends Robot {
             if (assigned != -1) {
                 freePoliticians.remove(assigned);
             }
-            System.out.println("finished turn");
             int bidAmount = slandererCount;
             if (rc.canBid(bidAmount)) {
-                System.out.println("Bidding " + bidAmount);
                 rc.bid(bidAmount);
             }
 
@@ -213,7 +211,6 @@ public class EnlightenmentCenter extends Robot {
 
     private void senseEC() throws GameActionException {
         int senseRadius = (int) Math.floor(Math.pow(getSenseRadiusSquared(), .5));
-        System.out.println("radius: " + senseRadius);
         MapLocation north = rc.getLocation().translate(0,senseRadius);
         if (!rc.onTheMap(north)){
             playableDirections.remove(Direction.NORTH);
