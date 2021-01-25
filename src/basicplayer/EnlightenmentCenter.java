@@ -206,17 +206,12 @@ public class EnlightenmentCenter extends Robot {
             }
             politicianIds.removeAll(remove);
 
-
-
-
-
         }
 
     }
 
     private void senseEC() throws GameActionException {
         int senseRadius = (int) Math.floor(Math.pow(getSenseRadiusSquared(), .5));
-        System.out.println("radius: " + senseRadius);
         MapLocation north = rc.getLocation().translate(0,senseRadius);
         if (!rc.onTheMap(north)){
             playableDirections.remove(Direction.NORTH);

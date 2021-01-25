@@ -92,13 +92,11 @@ public class Slanderer extends Robot {
         
 
         if (!movedAwayFromEC) {
-            System.out.println("Currently moving one unit away from the EC");
             moveOneUnitAwayFromEC();
         }
         else if (!inPosition) {
             if ((slandererDirection != Direction.NORTHEAST && slandererDirection != Direction.NORTHWEST && slandererDirection != Direction.SOUTHEAST && slandererDirection != Direction.SOUTHWEST )) { // On highway path
                 if (highwayCounter < highwayExit) {
-                    System.out.println("Moving on highway");
                     if (rc.canMove(spawnDirection)) {
                         rc.move(spawnDirection);
                         highwayCounter++;
@@ -106,7 +104,6 @@ public class Slanderer extends Robot {
                     }
                 } else if (highwayCounter == highwayExit) {
                     // if ID is even, go on CCW branch, otherwise go on CW branch
-                    System.out.println("At the exit, current direction is " + slandererDirection);
                     System.out.println((spawnDirection.ordinal()-1)%8);
                     int ordinalDirection = (rc.getID()%2 == 0) ? (spawnDirection.ordinal()-1) : (spawnDirection.ordinal()+1);
                     int ordinalDirectionModded;
@@ -116,8 +113,6 @@ public class Slanderer extends Robot {
                         ordinalDirectionModded = ordinalDirection%8;
                     }
                     slandererDirection = RobotPlayer.directions[ordinalDirectionModded];
-                    System.out.println("Turning towards the " + slandererDirection + " direction");
-
                     while (true) { // Leave the highway
                         if (rc.canMove(slandererDirection)) {
                             rc.move(slandererDirection);
@@ -130,7 +125,6 @@ public class Slanderer extends Robot {
             else { // On a diagonal
                 while(true) {
                     for (Direction direction : getDirectionForOrganization(spawnDirection)) {
-                        System.out.println("Trying to move north or south");
                         if (rc.canMove(direction)) {
                             System.out.println(direction);
                             rc.move(direction);

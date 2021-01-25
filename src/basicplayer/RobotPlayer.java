@@ -144,7 +144,6 @@ public strictfp class RobotPlayer {
         boolean tracingObstacle = false;
         while (true) {
             Direction d = rc.getLocation().directionTo(targetLocation);
-            System.out.println("Direction to target" + d);
             if (rc.getLocation().equals(targetLocation) || (checkWithinSenseRadius && (rc.getLocation().isWithinDistanceSquared(targetLocation, rc.getType().actionRadiusSquared - 1 )))) { // Has reached target location or at least within sensor radius
                 System.out.println("I have reached the target location");
                 // perform some action based on the unit
@@ -163,13 +162,9 @@ public strictfp class RobotPlayer {
                                     System.out.println("---------------------LOCATION OCCUPIED BY SOMETHING------------------");
                                     Clock.yield();
                                 } else {
-                                    System.out.println("set tracing to false");
                                     tracingObstacle = false;
                                 }
                             }
-                            System.out.println("Will turn towards " + bugDirection);
-                            System.out.println("Obstacle should be on this direction " + Utilities.leftHandSideForCurrentDirection(bugDirection));
-                            System.out.println("Obstacle coord: " + rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)));
                             System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
                             if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)) || Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection).add(bugDirection)) ) {
                                 tracingObstacle = false;
@@ -195,10 +190,8 @@ public strictfp class RobotPlayer {
                     tracingObstacle = true;
                     if (bugDirection == null) {
                         bugDirection = d.rotateRight();
-                        System.out.println("Cannot move towards target, rotating right");
                     }
                     for (int i = 0; i < 8; i++) {
-                        System.out.println("bugDirection " + bugDirection + "Can move there "  + rc.canMove(bugDirection) + "Passability at that spot " + rc.sensePassability(rc.getLocation().add(bugDirection)));
                         if (rc.canMove(bugDirection) && rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold) {
                             rc.move(bugDirection);
                             break;
