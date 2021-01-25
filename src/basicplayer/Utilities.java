@@ -81,7 +81,6 @@ public class Utilities {
 
     static boolean checkTypeAtLocation(RobotController rc, Direction dir, RobotType type) throws GameActionException {
         RobotInfo robot = rc.senseRobotAtLocation(rc.getLocation().add(dir));
-        System.out.println(dir);
         if (robot != null) {
             return robot.type.equals(type);
         } else {

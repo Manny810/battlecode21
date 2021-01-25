@@ -158,9 +158,18 @@ public strictfp class RobotPlayer {
                                 rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold &&
                                 (rc.sensePassability(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection))) < passabilityThreshold ||
                                         (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)))))) { // Check if there's obstacle to left while tracing
+                            if (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)))){
+                                if ((Utilities.checkTypeAtLocation(rc, d, RobotType.MUCKRAKER) && Utilities.checkFlagAtLocation(rc, d))) {
+                                    System.out.println("---------------------LOCATION OCCUPIED BY SOMETHING------------------");
+                                    Clock.yield();
+                                } else {
+                                    System.out.println("set tracing to false");
+                                    tracingObstacle = false;
+                                }
+                            }
                             System.out.println("Will turn towards " + bugDirection);
-                            System.out.println("Obstacle should be on this direction " + bugDirection.rotateLeft().rotateLeft());
-                            System.out.println("Obstacle coord: " + rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft()));
+                            System.out.println("Obstacle should be on this direction " + Utilities.leftHandSideForCurrentDirection(bugDirection));
+                            System.out.println("Obstacle coord: " + rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)));
                             System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
                             if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)) || Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection).add(bugDirection)) ) {
                                 tracingObstacle = false;
@@ -171,7 +180,7 @@ public strictfp class RobotPlayer {
                         }
                         bugDirection = bugDirection.rotateRight();
                     }
-                    bugDirection.rotateLeft();
+                    bugDirection = bugDirection.rotateLeft();
                 }
                 else if (rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
                     rc.move(d);

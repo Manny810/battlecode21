@@ -195,7 +195,6 @@ public class EnlightenmentCenter extends Robot {
             }
             politicianIds.removeAll(remove);
         }
-        setECFlag();
 
         int assigned = setECFlag();
         if (assigned != -1){
