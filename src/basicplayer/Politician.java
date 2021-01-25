@@ -21,7 +21,13 @@ public class Politician extends Robot {
     public Politician(RobotController rc) throws GameActionException {
         super(rc);
         round = 0;
-        targetLocation = null;
+        MapLocation location = getCommandFromEC();
+        if (location != null){
+            targetLocation = location;
+            System.out.println("GOT A NEW TARGET BRO at " + location.toString());
+        } else {
+            targetLocation = null;
+        }
     }
 
     @Override
@@ -49,7 +55,7 @@ public class Politician extends Robot {
             round++;
 
         } else if (targetLocation != null){
-            System.out.println("My target Location Bro: " + location.toString());
+            System.out.println("My target Location Bro: " + targetLocation.toString());
             RobotPlayer.basicBugStraightLine(targetLocation, true);
 
             Team enemy = rc.getTeam().opponent();
