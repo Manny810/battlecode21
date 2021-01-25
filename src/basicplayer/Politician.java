@@ -21,7 +21,13 @@ public class Politician extends Robot {
     public Politician(RobotController rc) throws GameActionException {
         super(rc);
         round = 0;
-        targetLocation = null;
+        MapLocation location = getCommandFromEC();
+        if (location != null){
+            targetLocation = location;
+            System.out.println("GOT A NEW TARGET BRO at " + location.toString());
+        } else {
+            targetLocation = null;
+        }
     }
 
     @Override

@@ -294,6 +294,7 @@ public abstract class Robot {
                     return location;
                 }
                 else{
+                    System.out.println("ID does not match the hash");
                     return null;
                 }
             }

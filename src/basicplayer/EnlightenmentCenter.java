@@ -130,9 +130,9 @@ public class EnlightenmentCenter extends Robot {
 //            int id = this.rc.getID();
             double total = slandererCount + politicianCount + muckrakerCount + 1.0;
             System.out.println("#Slanderers : " + slandererCount);
-            System.out.println( "#Politicians : " +politicianCount);
-            System.out.println("#muckraker : " +muckrakerCount);
-            System.out.println("Total : " +total);
+            System.out.println("#Politicians : " + politicianCount);
+            System.out.println("#muckraker : " + muckrakerCount);
+            System.out.println("Total : " + total);
 
             RobotType toBuild;
             int influence;
@@ -194,20 +194,20 @@ public class EnlightenmentCenter extends Robot {
                 }
             }
             politicianIds.removeAll(remove);
-        }
-
-        int assigned = setECFlag();
-        if (assigned != -1){
-            freePoliticians.remove(assigned);
-        }
-        System.out.println("finished turn");
-        int bidAmount = slandererCount;
-        if (rc.canBid(bidAmount)) {
-            System.out.println("Bidding " + bidAmount);
-            rc.bid(bidAmount);
-        }
 
 
+            int assigned = setECFlag();
+            if (assigned != -1) {
+                freePoliticians.remove(assigned);
+            }
+            System.out.println("finished turn");
+            int bidAmount = slandererCount;
+            if (rc.canBid(bidAmount)) {
+                System.out.println("Bidding " + bidAmount);
+                rc.bid(bidAmount);
+            }
+
+        }
 
     }
 
@@ -307,7 +307,8 @@ public class EnlightenmentCenter extends Robot {
         }
         System.out.println("Not setting flag to anything");
         System.out.println("enemyECLocations size: " + enemyECLocations.size());
-        System.out.println("neutral EC Locations size: " + neutralECLocations.size()); 
+        System.out.println("neutral EC Locations size: " + neutralECLocations.size());
+        System.out.println(assignedPerson);
         rc.setFlag(0);
         return -1;
     }
