@@ -21,6 +21,7 @@ public abstract class Robot {
     static final int ENEMY_POLITICIAN_FLAG_CODE = 3;
     static final int ENEMY_SLANDERER_FLAG_CODE = 4;
     static final int ENEMY_MUCKRAKER_FLAG_CODE = 5;
+    static final int OUR_EC_FLAG_CODE = 6;
 
     static final int SLANDERER_FLAG_CODE = 1;
     
@@ -42,6 +43,8 @@ public abstract class Robot {
 
     // a set of map locations with enemy enlightment centers
     Set<RobotInfo> enemyEnlightmentCenters = new HashSet<>();
+
+    Set<RobotInfo> ourEnlightmentCenters = new HashSet<>();
 
 
     public Direction findWallDirection(Direction[] blockedDirections) {
@@ -139,13 +142,13 @@ public abstract class Robot {
         // detect robots
         MapLocation[] curDetectedRobots = rc.detectNearbyRobots();
 
-        for (MapLocation robotLocation: curDetectedRobots){
+        for (MapLocation robotLocation : curDetectedRobots) {
             detectedBots.add(robotLocation);
         }
 
         // sense robots
         RobotInfo[] robots = rc.senseNearbyRobots();
-        for (RobotInfo robot: robots){
+        for (RobotInfo robot : robots) {
             int id = robot.getID();
             RobotType type = robot.getType();
             Team team = robot.getTeam();
@@ -155,32 +158,48 @@ public abstract class Robot {
             detectedBots.remove(location);
 
             // if we saw a neutral piece -> neutral Enlightment Center
-            if (team.equals(Team.NEUTRAL)){
+            if (team.equals(Team.NEUTRAL)) {
                 neutralEnlightmentCenters.add(robot);
+            } else if (rc.getTeam().equals(team) && type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+                ourEnlightmentCenters.add(robot);
             }
             // if the robot is an enemy
-            else if (!rc.getTeam().equals(team)){
-                switch(type){
-                    case ENLIGHTENMENT_CENTER: enemyEnlightmentCenters.add(robot); break;
-                    case MUCKRAKER: enemyMuckRaker.add(robot); break;
-                    case SLANDERER: confirmedSlanderers.add(robot); break;
-                    case POLITICIAN: enemyPoliticians.add(robot); break;
+            else if (!rc.getTeam().equals(team)) {
+                switch (type) {
+                    case ENLIGHTENMENT_CENTER:
+                        enemyEnlightmentCenters.add(robot);
+                        break;
+                    case MUCKRAKER:
+                        enemyMuckRaker.add(robot);
+                        break;
+                    case SLANDERER:
+                        confirmedSlanderers.add(robot);
+                        break;
+                    case POLITICIAN:
+                        enemyPoliticians.add(robot);
+                        break;
                 }
 
             }
         }
-        if (rc.getType().equals(RobotType.SLANDERER)){
+        if (rc.getType().equals(RobotType.SLANDERER)) {
             rc.setFlag(SLANDERER_FLAG_CODE);
-        } else if (neutralEnlightmentCenters.size() != 0){
-            for (RobotInfo robot: neutralEnlightmentCenters){
+        } else if (neutralEnlightmentCenters.size() != 0) {
+            for (RobotInfo robot : neutralEnlightmentCenters) {
                 flagRobot(robot);
                 neutralEnlightmentCenters.remove(robot);
                 break;
             }
-        } else if (enemyEnlightmentCenters.size() != 0){
-            for (RobotInfo robot: enemyEnlightmentCenters){
+        } else if (enemyEnlightmentCenters.size() != 0) {
+            for (RobotInfo robot : enemyEnlightmentCenters) {
                 flagRobot(robot);
                 enemyEnlightmentCenters.remove(robot);
+                break;
+            }
+        } else if (ourEnlightmentCenters.size() != 0) {
+            for (RobotInfo robot : ourEnlightmentCenters) {
+                flagRobot(robot);
+                ourEnlightmentCenters.remove(robot);
                 break;
             }
         } else if (enemyPoliticians.size() != 0){
@@ -222,6 +241,8 @@ public abstract class Robot {
     public int typeToFlag(RobotType type, Team team){
         if (team.equals(Team.NEUTRAL)){
             return NEUTRAL_EC_FLAG_CODE;
+        } else if (team.equals(rc.getTeam())){
+            return OUR_EC_FLAG_CODE;
         }
         switch (type) {
             case ENLIGHTENMENT_CENTER:

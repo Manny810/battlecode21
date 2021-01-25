@@ -34,6 +34,7 @@ public class EnlightenmentCenter extends Robot {
 
     Set<MapLocation> neutralECLocations = new HashSet<>();
     Set<MapLocation> enemyECLocations = new HashSet<>();
+    Set<MapLocation> teamECLocations = new HashSet<>();
     Set<MapLocation> enemyMuckrakerLocations = new HashSet<>();
     Set<MapLocation> enemySlandererLocations = new HashSet<>();
     Set<MapLocation> enemyPoliticianLocations = new HashSet<>();
@@ -363,9 +364,11 @@ public class EnlightenmentCenter extends Robot {
 
     private void removePerson(MapLocation location, int id) {
         System.out.println("Removed " + id + "From there post");
-        Set<Integer> newSet = assignedPerson.get(location);
-        newSet.remove(id);
-        assignedPerson.put(location, newSet);
+        if (assignedPerson.containsKey(location)) {
+            Set<Integer> newSet = assignedPerson.get(location);
+            newSet.remove(id);
+            assignedPerson.put(location, newSet);
+        }
     }
 
     private void readRobots(int id) throws GameActionException {
@@ -381,11 +384,14 @@ public class EnlightenmentCenter extends Robot {
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
             }
+
         } else if (extraInfo == 2) {
             enemyECLocations.add(location);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
             }
+            neutralECLocations.remove(location);
+            teamECLocations.remove(location);
             System.out.println("Got enemy EC");
             System.out.println("ID: " + id);
             System.out.println("Extra Info: " + extraInfo);
@@ -401,6 +407,12 @@ public class EnlightenmentCenter extends Robot {
             System.out.println("Extra Info: " + extraInfo);
         } else if (extraInfo == 5) {
             enemyMuckrakerLocations.add(location);
+        } else if (extraInfo == 6) {
+            teamECLocations.add(location);
+            neutralECLocations.remove(location);
+            enemyECLocations.remove(location);
+
+            assignedPerson.remove(location);
         } else {
             System.out.println("Didn't read anything");
             System.out.println("ID: " + id);
