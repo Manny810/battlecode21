@@ -44,7 +44,7 @@ public class EnlightenmentCenter extends Robot {
 
     Set<Integer> freePoliticians = new HashSet<>();
 
-    Map<MapLocation, Integer> assignedPerson = new HashMap<>();
+    Map<MapLocation, Set<Integer>> assignedPerson = new HashMap<>();
     Map<Integer, MapLocation> assignedLocation = new HashMap<>();
 
     static int counter = 0;
@@ -127,6 +127,16 @@ public class EnlightenmentCenter extends Robot {
             runEarlyGameStrat();
         } else {
 
+            int assigned = setECFlag();
+            if (assigned != -1) {
+                freePoliticians.remove(assigned);
+            }
+
+            int bidAmount = slandererCount;
+            if (rc.canBid(bidAmount)) {
+                System.out.println("Bidding " + bidAmount);
+                rc.bid(bidAmount);
+            }
 //            int id = this.rc.getID();
             double total = slandererCount + politicianCount + muckrakerCount + 1.0;
             System.out.println("#Slanderers : " + slandererCount);
@@ -190,20 +200,10 @@ public class EnlightenmentCenter extends Robot {
                     remove.add(id);
                     MapLocation location = assignedLocation.get(id);
                     assignedLocation.remove(id);
-                    assignedPerson.remove(location);
+                    removePerson(location, id);
                 }
             }
             politicianIds.removeAll(remove);
-
-
-            int assigned = setECFlag();
-            if (assigned != -1) {
-                freePoliticians.remove(assigned);
-            }
-            int bidAmount = slandererCount;
-            if (rc.canBid(bidAmount)) {
-                rc.bid(bidAmount);
-            }
 
         }
 
@@ -242,16 +242,15 @@ public class EnlightenmentCenter extends Robot {
     }
 
     private int setECFlag() throws GameActionException {
-        // TODO bug because since neutral EC locations never removed this means we never send to enemy EC locations if we see a single N EC
         Set<Integer> remove = new HashSet<>();
         if (freePoliticians.size() == 0){
             System.out.println("No more politicians");
         }
         if (neutralECLocations.size() != 0){
             for (MapLocation location: neutralECLocations){
-                if (!assignedPerson.containsKey(location)){
+                if (assignedPerson.get(location).size() == 0){
                     for (Integer id: freePoliticians){
-                        assignedPerson.put(location, id);
+                        assignPerson(location, id);
                         assignedLocation.put(id, location);
                         remove.add(id);
 
@@ -277,11 +276,11 @@ public class EnlightenmentCenter extends Robot {
 
         if (enemyECLocations.size() != 0){
             for (MapLocation location: enemyECLocations){
-                if (!assignedPerson.containsKey(location)){
+                if (assignedPerson.get(location).size() == 0){
                     for (Integer id: freePoliticians){
 
-                        remove.add(id);
-                        assignedPerson.put(location, id);
+
+                        assignPerson(location, id);
                         assignedLocation.put(id, location);
 
                         int flag = 0;
@@ -302,12 +301,71 @@ public class EnlightenmentCenter extends Robot {
 
             }
         }
+        if (freePoliticians.size() != 0){
+            for (int id : freePoliticians){
+                if (neutralECLocations.size() != 0) {
+                    for (MapLocation location : neutralECLocations) {
+
+                        assignPerson(location, id);
+
+                        assignedLocation.put(id, location);
+
+                        int flag = 0;
+                        flag += locationToFlag(location); // location
+                        flag += (id % 256) * 128 * 128; // id of politician to move
+                        flag += 1 * 128 * 128 * 256; // specialized command
+                        flag += 1 * 128 * 128 * 256 * 2; // is a command
+
+                        rc.setFlag(flag);
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
+
+                        return id;
+                    }
+                }
+                if (enemyECLocations.size() != 0) {
+                    for (MapLocation location : enemyECLocations) {
+
+                        assignPerson(location, id);
+                        assignedLocation.put(id, location);
+
+                        int flag = 0;
+                        flag += locationToFlag(location); // location
+                        flag += (id % 256) * 128 * 128; // id of politician to move
+                        flag += 1 * 128 * 128 * 256; // specialized command
+                        flag += 1 * 128 * 128 * 256 * 2; // is a command
+
+                        rc.setFlag(flag);
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
+
+                        return id;
+                    }
+                }
+
+            }
+        }
         System.out.println("Not setting flag to anything");
         System.out.println("enemyECLocations size: " + enemyECLocations.size());
         System.out.println("neutral EC Locations size: " + neutralECLocations.size());
         System.out.println(assignedPerson);
         rc.setFlag(0);
         return -1;
+    }
+
+    private void assignPerson(MapLocation location, int id) {
+        Set<Integer> newSet = assignedPerson.get(location);
+        newSet.add(id);
+        assignedPerson.put(location, newSet);
+    }
+
+    private void removePerson(MapLocation location, int id) {
+        System.out.println("Removed " + id + "From there post");
+        Set<Integer> newSet = assignedPerson.get(location);
+        newSet.remove(id);
+        assignedPerson.put(location, newSet);
     }
 
     private void readRobots(int id) throws GameActionException {
@@ -320,8 +378,14 @@ public class EnlightenmentCenter extends Robot {
             System.out.println("ID: " + id);
             System.out.println("Extra Info: " + extraInfo);
             neutralECLocations.add(location);
+            if (!assignedPerson.containsKey(location)) {
+                assignedPerson.put(location, new HashSet<>());
+            }
         } else if (extraInfo == 2) {
             enemyECLocations.add(location);
+            if (!assignedPerson.containsKey(location)) {
+                assignedPerson.put(location, new HashSet<>());
+            }
             System.out.println("Got enemy EC");
             System.out.println("ID: " + id);
             System.out.println("Extra Info: " + extraInfo);
