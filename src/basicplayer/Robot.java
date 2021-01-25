@@ -13,6 +13,7 @@ public abstract class Robot {
     Team allyTeam;
     Team enemyTeam;
     Integer enlightmentCenterId;
+    MapLocation enlightmentCenterLocation;
 
 
     static final int NO_FLAG_CODE = 0;
@@ -131,6 +132,7 @@ public abstract class Robot {
         for (RobotInfo robot: nearbyRobots){
             if (robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER)){
                 enlightmentCenterId = robot.getID();
+                enlightmentCenterLocation = robot.getLocation();
             }
         }
     }
@@ -300,6 +302,9 @@ public abstract class Robot {
 
 
     public MapLocation getCommandFromEC() throws GameActionException {
+        if (!rc.canGetFlag(enlightmentCenterId)){
+            return enlightmentCenterLocation; 
+        }
         int flag = rc.getFlag(enlightmentCenterId);
         if ((flag / Math.pow(2,23)) == 0){
             return null;
@@ -319,6 +324,19 @@ public abstract class Robot {
                     return null;
                 }
             }
+        }
+    }
+
+    public MapLocation getCommandFromEC(boolean override) throws GameActionException {
+        int flag = rc.getFlag(enlightmentCenterId);
+        if ((flag / Math.pow(2,23)) == 0){
+            return null;
+        } else {
+            MapLocation location = getLocationFromFlag(flag);
+            int extraInformation = getExtraInfoFromFlag(flag);
+
+            int idHash = extraInformation % 256;
+            return location;
         }
     }
 

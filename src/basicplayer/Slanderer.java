@@ -20,9 +20,11 @@ public class Slanderer extends Robot {
     int highwayExit = 0;
     int highwayCounter = 0;
     boolean exitedHighway = false;
+    MapLocation targetLocation;
 
     public Slanderer(RobotController rc) throws GameActionException {
         super(rc);
+        targetLocation = null;
     }
 
 
@@ -89,9 +91,29 @@ public class Slanderer extends Robot {
 
     @Override
     public void run() throws GameActionException {
-        
+        if (rc.getType().equals(RobotType.POLITICIAN)){
+            if (targetLocation == null){
+                if (rc.canGetFlag(enlightmentCenterId)) {
+                    targetLocation = getCommandFromEC(true);
+                } else {
+                    targetLocation = enlightmentCenterLocation;
+                }
 
-        if (!movedAwayFromEC) {
+            } else{
+                System.out.println("My target Location Bro: " + targetLocation.toString());
+                RobotPlayer.basicBugStraightLine(targetLocation, true);
+
+                Team enemy = rc.getTeam().opponent();
+                int actionRadius = rc.getType().actionRadiusSquared;
+                RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
+                if ((attackable.length != 0 || targetLocation.distanceSquaredTo(rc.getLocation()) <= actionRadius) && rc.canEmpower(actionRadius)) {
+                    System.out.println("empowering...");
+                    rc.empower(actionRadius);
+                    System.out.println("empowered");
+                    return;
+                }
+            }
+        } else if (!movedAwayFromEC) {
             moveOneUnitAwayFromEC();
         }
         else if (!inPosition) {
