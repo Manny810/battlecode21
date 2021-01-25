@@ -31,6 +31,7 @@ public class EnlightenmentCenter extends Robot {
     int politicianCount = 0;
     int muckrakerCount = 0;
 
+
     Set<MapLocation> neutralECLocations = new HashSet<>();
     Set<MapLocation> enemyECLocations = new HashSet<>();
     Set<MapLocation> enemyMuckrakerLocations = new HashSet<>();
@@ -128,6 +129,10 @@ public class EnlightenmentCenter extends Robot {
 
 //            int id = this.rc.getID();
             double total = slandererCount + politicianCount + muckrakerCount + 1.0;
+            System.out.println("#Slanderers : " + slandererCount);
+            System.out.println( "#Politicians : " +politicianCount);
+            System.out.println("#muckraker : " +muckrakerCount);
+            System.out.println("Total : " +total);
 
             RobotType toBuild;
             int influence;
@@ -190,26 +195,19 @@ public class EnlightenmentCenter extends Robot {
             }
             politicianIds.removeAll(remove);
         }
+        setECFlag();
 
         int assigned = setECFlag();
         if (assigned != -1){
             freePoliticians.remove(assigned);
         }
         System.out.println("finished turn");
+        int bidAmount = slandererCount;
+        if (rc.canBid(bidAmount)) {
+            System.out.println("Bidding " + bidAmount);
+            rc.bid(bidAmount);
+        }
 
-
-////      Testing out diagonal directions
-//        RobotType toBuild = RobotType.SLANDERER;
-//        int influence = 100;
-//
-//        for (Direction dir: directions) {
-//            if (rc.canBuildRobot(toBuild, directions[(dir.ordinal()+1)%8], influence)) {
-//                rc.buildRobot(toBuild, directions[(dir.ordinal()+1)%8], influence);
-//            }
-//            Clock.yield();
-//            Clock.yield();
-//            Clock.yield();
-//        }
 
 
     }
