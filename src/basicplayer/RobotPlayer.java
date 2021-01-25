@@ -153,10 +153,11 @@ public strictfp class RobotPlayer {
                 if (tracingObstacle) {
                     System.out.println("Now tracing obstacle");
                     for (int i = 0; i < 8; i++) {
+                        System.out.println(bugDirection);
                         if (rc.canMove(bugDirection) &&
                                 rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold &&
                                 (rc.sensePassability(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection))) < passabilityThreshold ||
-                                        (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft().rotateLeft()))))) { // Check if there's obstacle to left while tracing
+                                        (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)))))) { // Check if there's obstacle to left while tracing
                             System.out.println("Will turn towards " + bugDirection);
                             System.out.println("Obstacle should be on this direction " + bugDirection.rotateLeft().rotateLeft());
                             System.out.println("Obstacle coord: " + rc.getLocation().add(bugDirection).add(bugDirection.rotateLeft().rotateLeft()));
@@ -177,9 +178,8 @@ public strictfp class RobotPlayer {
                     System.out.println("Moved on the line towards target" + d);
                     bugDirection = null;
                 }
-                else if (Utilities.checkTypeAtLocation(rc, d, RobotType.MUCKRAKER) &&
+                else if ((Utilities.checkTypeAtLocation(rc, d, RobotType.MUCKRAKER) && Utilities.checkFlagAtLocation(rc, d)) &&
                         rc.isLocationOccupied((rc.getLocation()).add(d)) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
-
                     Clock.yield();
                 }
                 else { // Can't move towards targetLocation

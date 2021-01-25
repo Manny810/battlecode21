@@ -83,7 +83,6 @@ public class Utilities {
         RobotInfo robot = rc.senseRobotAtLocation(rc.getLocation().add(dir));
         System.out.println(dir);
         if (robot != null) {
-            System.out.println(robot.location.toString());
             return robot.type.equals(type);
         } else {
             return false;
@@ -96,7 +95,6 @@ public class Utilities {
             int id = robot.ID;
             int flag = rc.getFlag(id);
             return (flag != Robot.SLANDERER_FLAG_CODE) || !robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER);
-
         }
         return true;
 
