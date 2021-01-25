@@ -303,7 +303,7 @@ public abstract class Robot {
 
     public MapLocation getCommandFromEC() throws GameActionException {
         if (!rc.canGetFlag(enlightmentCenterId)){
-            return enlightmentCenterLocation; 
+            return enlightmentCenterLocation;
         }
         int flag = rc.getFlag(enlightmentCenterId);
         if ((flag / Math.pow(2,23)) == 0){
