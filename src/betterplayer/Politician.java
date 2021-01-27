@@ -37,7 +37,7 @@ public class Politician extends Robot {
         System.out.println(rc.getFlag(enlightmentCenterId));
         System.out.println("EC ID: " + enlightmentCenterId);
         System.out.println(0/(2^23));
-        if (location != null){
+        if (targetLocation == null && location != null){
             targetLocation = location;
             System.out.println("GOT A NEW TARGET BRO at " + location.toString());
         }
