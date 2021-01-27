@@ -1,4 +1,4 @@
-package basicplayer;
+package betterplayer;
 import battlecode.common.*;
 
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public strictfp class RobotPlayer {
 
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
-        basicplayer.RobotPlayer.rc = rc;
+        betterplayer.RobotPlayer.rc = rc;
 
         turnCount = 0;
         Robot robot;

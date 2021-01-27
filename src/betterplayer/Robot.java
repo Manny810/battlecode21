@@ -1,4 +1,4 @@
-package basicplayer;
+package betterplayer;
 
 import battlecode.common.*;
 

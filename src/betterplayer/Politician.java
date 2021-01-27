@@ -1,4 +1,4 @@
-package basicplayer;
+package betterplayer;
 
 import battlecode.common.*;
 
@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static basicplayer.RobotPlayer.rc;
+import static betterplayer.RobotPlayer.rc;
 
 public class Politician extends Robot {
 

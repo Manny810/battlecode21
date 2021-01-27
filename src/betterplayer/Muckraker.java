@@ -1,4 +1,4 @@
-package basicplayer;
+package betterplayer;
 import battlecode.common.*;
 import com.sun.tools.javac.util.List;
 
