@@ -48,18 +48,23 @@ public class EnlightenmentCenter extends Robot {
     Map<MapLocation, Set<Integer>> assignedPerson = new HashMap<>();
     Map<Integer, MapLocation> assignedLocation = new HashMap<>();
 
+    Map<Integer, MapLocation> spawnLocationPassabilities = new HashMap<>();
+
     static int counter = 0;
     boolean start;
 
     public EnlightenmentCenter(RobotController rc) throws GameActionException {
         super(rc);
         start = true;
+
     }
 
 
     private void runEarlyGameStrat() throws GameActionException {
         RobotType toBuild = RobotType.SLANDERER;
         int influence = SLANDERER_INFLUENCE;
+
+
 
         for (Direction dir : RobotPlayer.ordinalDirections) { // Build one slanderer in the beginning
             if (rc.canBuildRobot(toBuild, dir, influence)) {

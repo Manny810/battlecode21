@@ -42,6 +42,8 @@ public strictfp class RobotPlayer {
             Direction.NORTHWEST
     };
 
+    static final int[] turningPriority = {1, -1, 2, -2, 3, -3, 4};
+
     static int turnCount;
 
 
@@ -165,7 +167,6 @@ public strictfp class RobotPlayer {
                                     tracingObstacle = false;
                                 }
                             }
-                            System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
                             if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)) || Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection).add(bugDirection)) ) {
                                 tracingObstacle = false;
                                 startingLocation = rc.getLocation();
@@ -218,6 +219,7 @@ public strictfp class RobotPlayer {
                 // perform some action based on the unit
                 break;
             } else if (rc.isReady() && !bypassObstacle) { // Moving on the line towards targetLocation
+                System.out.println("START OF ROUND  " + bugDirection );
                 if (tracingObstacle) {
                     System.out.println("Now tracing obstacle");
                     for (int i = 0; i < 8; i++) {
@@ -234,7 +236,6 @@ public strictfp class RobotPlayer {
                                     tracingObstacle = false;
                                 }
                             }
-                            System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
                             if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)) || Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection).add(bugDirection)) ) {
                                 tracingObstacle = false;
                                 startingLocation = rc.getLocation();
@@ -247,6 +248,7 @@ public strictfp class RobotPlayer {
                     int currentDistanceToTarget = rc.getLocation().distanceSquaredTo(targetLocation);
                     if (currentDistanceToTarget > previousDistanceToTarget) {
                         bypassObstacle = true;
+                        System.out.println("------Bypass-----");
                     }
                     bugDirection = bugDirection.rotateLeft();
                 }
@@ -274,8 +276,39 @@ public strictfp class RobotPlayer {
                     bugDirection = bugDirection.rotateLeft();
                 }
             } else if (rc.isReady() && bypassObstacle) {
-                rc.move(d);
-                bugDirection = null;
+                double currentPassability = rc.sensePassability(rc.getLocation());
+                if (rc.canMove(d)) {
+                    System.out.println("bypass while move towards target  "  +d );
+                    rc.move(d);
+//                    bugDirection = null;
+                    bugDirection = d;
+                } else if (rc.isLocationOccupied((rc.getLocation()).add(d))) { // Location is occupied by some unit
+                    System.out.println("something in the way");
+
+                    if (Utilities.checkTypeAtLocation(rc, d , RobotType.MUCKRAKER) && Utilities.checkFlagAtLocation(rc, d)) { // If it is a movable unit (politician/muckraker)
+                        System.out.println("something in the way");
+                        Clock.yield();
+                    } else { // blocked by an immovable unit
+                        for (int i : turningPriority) {
+                            int nextOrdinal = bugDirection.ordinal() + i;
+                            int nextOrdinalModded;
+                            if (nextOrdinal < 0) {
+                                nextOrdinalModded = RobotPlayer.directions.length + nextOrdinal;
+                            } else {
+                                nextOrdinalModded = nextOrdinal % 8;
+                            }
+                            Direction nextDirection = RobotPlayer.directions[nextOrdinalModded];
+                            bugDirection = nextDirection;
+                            if (rc.canMove(bugDirection)) {
+                                rc.move(bugDirection);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (currentPassability < passabilityThreshold && rc.sensePassability(rc.getLocation()) >= passabilityThreshold) {
+                    bypassObstacle = false;
+                }
             }
             Clock.yield();
         }
