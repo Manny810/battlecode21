@@ -204,5 +204,82 @@ public strictfp class RobotPlayer {
             }
         }
     }
+
+
+    static void basicBugStraightLineWithIgnoreObstacle (MapLocation targetLocation, boolean checkWithinSenseRadius) throws GameActionException {
+        MapLocation startingLocation = rc.getLocation();
+        boolean tracingObstacle = false;
+        boolean bypassObstacle = false;
+        while (true) {
+            Direction d = rc.getLocation().directionTo(targetLocation);
+            int previousDistanceToTarget = rc.getLocation().distanceSquaredTo(targetLocation);
+            if (rc.getLocation().equals(targetLocation) || (checkWithinSenseRadius && (rc.getLocation().isWithinDistanceSquared(targetLocation, rc.getType().actionRadiusSquared - 1 )))) { // Has reached target location or at least within sensor radius
+                System.out.println("I have reached the target location");
+                // perform some action based on the unit
+                break;
+            } else if (rc.isReady() && !bypassObstacle) { // Moving on the line towards targetLocation
+                if (tracingObstacle) {
+                    System.out.println("Now tracing obstacle");
+                    for (int i = 0; i < 8; i++) {
+                        System.out.println(bugDirection);
+                        if (rc.canMove(bugDirection) &&
+                                rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold &&
+                                (rc.sensePassability(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection))) < passabilityThreshold ||
+                                        (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)))))) { // Check if there's obstacle to left while tracing
+                            if (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)))){
+                                if ((Utilities.checkTypeAtLocation(rc, d, RobotType.MUCKRAKER) && Utilities.checkFlagAtLocation(rc, d))) {
+                                    System.out.println("---------------------LOCATION OCCUPIED BY SOMETHING------------------");
+                                    Clock.yield();
+                                } else {
+                                    tracingObstacle = false;
+                                }
+                            }
+                            System.out.println(Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)));
+                            if (Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection)) || Utilities.doIntersect(startingLocation, targetLocation, rc.getLocation(), rc.getLocation().add(bugDirection).add(bugDirection)) ) {
+                                tracingObstacle = false;
+                                startingLocation = rc.getLocation();
+                            }
+                            rc.move(bugDirection);
+                            break;
+                        }
+                        bugDirection = bugDirection.rotateRight();
+                    }
+                    int currentDistanceToTarget = rc.getLocation().distanceSquaredTo(targetLocation);
+                    if (currentDistanceToTarget > previousDistanceToTarget) {
+                        bypassObstacle = true;
+                    }
+                    bugDirection = bugDirection.rotateLeft();
+                }
+                else if ((rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold)) {
+                    rc.move(d);
+                    System.out.println("Moved on the line towards target" + d);
+                    bugDirection = null;
+                }
+                else if ((Utilities.checkTypeAtLocation(rc, d, RobotType.MUCKRAKER) && Utilities.checkFlagAtLocation(rc, d)) &&
+                        rc.isLocationOccupied((rc.getLocation()).add(d)) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold) {
+                    Clock.yield();
+                }
+                else { // Can't move towards targetLocation
+                    tracingObstacle = true;
+                    if (bugDirection == null) {
+                        bugDirection = d.rotateRight();
+                    }
+                    for (int i = 0; i < 8; i++) {
+                        if (rc.canMove(bugDirection) && rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold) {
+                            rc.move(bugDirection);
+                            break;
+                        }
+                        bugDirection = bugDirection.rotateRight();
+                    }
+                    bugDirection = bugDirection.rotateLeft();
+                }
+            } else if (rc.isReady() && bypassObstacle) {
+                rc.move(d);
+                bugDirection = null;
+            }
+            Clock.yield();
+        }
+    }
+
 }
 
