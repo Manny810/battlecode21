@@ -23,7 +23,7 @@ public class EnlightenmentCenter extends Robot {
     static final double MUCKRAKER_RATIO = 3.0;
     static final double TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1.0;
 
-    static final int SLANDERER_INFLUENCE = 100;
+    static final int SLANDERER_INFLUENCE = 85;
     static final int POLITICIAN_INFLUENCE = 50;
     static final int MUCKRAKER_INFLUENCE = 1;
 
@@ -67,23 +67,28 @@ public class EnlightenmentCenter extends Robot {
     private void runEarlyGameStrat() throws GameActionException {
         RobotType toBuild = RobotType.SLANDERER;
         int influence = SLANDERER_INFLUENCE;
+        int initialSlandererCount = 0;
 
-
-
-        for (Direction dir : RobotPlayer.ordinalDirections) { // Build one slanderer in the beginning
-            if (rc.canBuildRobot(toBuild, dir, influence)) {
-                rc.buildRobot(toBuild, dir, influence);
-                MapLocation newRobot = rc.getLocation().add(dir);
-                RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
-                int newRobotId = -1;
-                for (RobotInfo robot : nearbyRobots) {
-                    if (robot.getLocation().equals(newRobot)) {
-                        newRobotId = robot.getID();
+        while (initialSlandererCount < 2) {
+            if (rc.isReady()) {
+                for (Direction dir : RobotPlayer.ordinalDirections) { // Build one slanderer in the beginning
+                    if (rc.canBuildRobot(toBuild, dir, influence)) {
+                        rc.buildRobot(toBuild, dir, influence);
+                        MapLocation newRobot = rc.getLocation().add(dir);
+                        RobotInfo[] nearbyRobots = rc.senseNearbyRobots(2);
+                        int newRobotId = -1;
+                        for (RobotInfo robot : nearbyRobots) {
+                            if (robot.getLocation().equals(newRobot)) {
+                                newRobotId = robot.getID();
+                            }
+                        }
+                        slandererIds.add(newRobotId);
+                        slandererCount++;
+                        break;
                     }
                 }
-                slandererIds.add(newRobotId);
-                slandererCount++;
-                break;
+                initialSlandererCount++;
+                influence = 63;
             }
         }
 

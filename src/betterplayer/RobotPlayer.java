@@ -209,17 +209,19 @@ public strictfp class RobotPlayer {
 
     static void basicBugStraightLineWithIgnoreObstacle (MapLocation targetLocation, boolean checkWithinSenseRadius) throws GameActionException {
         MapLocation startingLocation = rc.getLocation();
+        int[] progressTracker = new int[] {-1,-1,-1,-1,-1};
+        int progressCounter = 0;
         boolean bypassObstacle = false;
         if (rc.sensePassability(startingLocation) < passabilityThreshold) {
             bypassObstacle = true;
         }
         boolean tracingObstacle = false;
         while (true) {
+            boolean botHasMoved = false;
             Direction d = rc.getLocation().directionTo(targetLocation);
             int previousDistanceToTarget = rc.getLocation().distanceSquaredTo(targetLocation);
             if (rc.getLocation().equals(targetLocation) || (checkWithinSenseRadius && (rc.getLocation().isWithinDistanceSquared(targetLocation, rc.getType().actionRadiusSquared - 1 )))) { // Has reached target location or at least within sensor radius
                 System.out.println("I have reached the target location");
-                // perform some action based on the unit
                 break;
             } else if (rc.isReady() && !bypassObstacle) { // Moving on the line towards targetLocation
                 System.out.println("START OF ROUND  " + bugDirection );
@@ -245,6 +247,7 @@ public strictfp class RobotPlayer {
                                 startingLocation = rc.getLocation();
                             }
                             rc.move(bugDirection);
+                            botHasMoved = true;
                             break;
                         }
                         bugDirection = bugDirection.rotateRight();
@@ -258,6 +261,7 @@ public strictfp class RobotPlayer {
                 }
                 else if ((rc.canMove(d) && rc.sensePassability(rc.getLocation().add(d)) >= passabilityThreshold)) {
                     rc.move(d);
+                    botHasMoved = true;
                     System.out.println("Moved on the line towards target" + d);
                     bugDirection = null;
                 }
@@ -273,6 +277,7 @@ public strictfp class RobotPlayer {
                     for (int i = 0; i < 8; i++) {
                         if (rc.canMove(bugDirection) && rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold) {
                             rc.move(bugDirection);
+                            botHasMoved = true;
                             break;
                         }
                         bugDirection = bugDirection.rotateRight();
@@ -314,8 +319,46 @@ public strictfp class RobotPlayer {
                     bypassObstacle = false;
                 }
             }
+
+            if (botHasMoved) {
+                System.out.println(rc.getLocation().distanceSquaredTo(targetLocation));
+                progressTracker[progressCounter] = rc.getLocation().distanceSquaredTo(targetLocation);
+                progressCounter = (progressCounter + 1) % 5;
+                if (!hasMadeProgress(progressTracker) || isAlternating(progressTracker)) {
+                    System.out.println("~~~~~~~~~~~~~Has not made progress~~~~~~~~~~~");
+                    bypassObstacle = true;
+                }
+            }
+
+
+
+
             Clock.yield();
         }
+    }
+
+    // [ # , # , #, #, #]
+    // [ 1, 2, 1, 2, 1] => no progress has been made
+    // [ 1, 1, 1, 1, 1] => no progress has been made
+    // [25, 16, 9, 4, 1] => progress has been made
+
+    static private boolean isAlternating(int[] progressTracker) {
+        for (int i = 0; i < progressTracker.length-1; i++) {
+            if (progressTracker[i] != progressTracker[i+2]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static private boolean hasMadeProgress(int[] progressTracker) {
+        for (int i = 0; i < progressTracker.length ; i++) { //Check to see if it's made progress
+            if (progressTracker[i] != progressTracker[i+1]) {
+                return true;
+            }
+        }
+        // all the distances are the same so no progress has been made
+        return false;
     }
 
 }
