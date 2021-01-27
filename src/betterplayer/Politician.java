@@ -57,8 +57,18 @@ public class Politician extends Robot {
                 System.out.println("empowered");
                 return;
             }
-        } else if (distance < 5) {
+        } else if (distance < 16) {
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            int robotCount = robots.length;
 
+            for (RobotInfo robot: robots){
+                if (!robot.getTeam().equals(rc.getTeam())){
+                    int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
+                    if (rc.canEmpower(dist)){
+                        rc.empower(dist);
+                    }
+                }
+            }
             Direction direction = rc.getLocation().directionTo(enlightmentCenterLocation).opposite();
             if (rc.canMove(direction)) {
                 rc.move(direction);
