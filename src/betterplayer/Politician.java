@@ -12,7 +12,6 @@ import static betterplayer.RobotPlayer.rc;
 public class Politician extends Robot {
 
     static final int POLITICIAN_SENSOR_RADIUS_SQUARED = 25;
-    int round;
     static Map<MapLocation, Set<Integer>> politicianAssignments = new HashMap<>();
 
     static final int POLITICIAN_ACTION_RADIUS = 9;
@@ -20,7 +19,7 @@ public class Politician extends Robot {
 
     public Politician(RobotController rc) throws GameActionException {
         super(rc);
-        round = 0;
+
         MapLocation location = getCommandFromEC();
         if (location != null){
             targetLocation = location;
@@ -36,25 +35,15 @@ public class Politician extends Robot {
         MapLocation location = getCommandFromEC();
         System.out.println(rc.getFlag(enlightmentCenterId));
         System.out.println("EC ID: " + enlightmentCenterId);
-        System.out.println(0/(2^23));
+
+        int distance = enlightmentCenterLocation.distanceSquaredTo(rc.getLocation());
+
         if (targetLocation == null && location != null){
             targetLocation = location;
             System.out.println("GOT A NEW TARGET BRO at " + location.toString());
         }
         // If we have a target
-        if (round < 2){
-            RobotInfo[] nearbyRobots = rc.senseNearbyRobots(8);
-            for (RobotInfo robot: nearbyRobots){
-                if (robot.getID() == enlightmentCenterId){
-                    Direction direction = rc.getLocation().directionTo(robot.getLocation()).opposite();
-                    if (rc.canMove(direction)){
-                        rc.move(direction);
-                    }
-                }
-            }
-            round++;
-
-        } else if (targetLocation != null){
+        if (targetLocation != null){
             System.out.println("My target Location Bro: " + targetLocation.toString());
 //            RobotPlayer.basicBugStraightLine(targetLocation, true);
             RobotPlayer.basicBugStraightLineWithIgnoreObstacle(targetLocation, true);
@@ -67,6 +56,12 @@ public class Politician extends Robot {
                 rc.empower(actionRadius);
                 System.out.println("empowered");
                 return;
+            }
+        } else if (distance < 5) {
+
+            Direction direction = rc.getLocation().directionTo(enlightmentCenterLocation).opposite();
+            if (rc.canMove(direction)) {
+                rc.move(direction);
             }
         }
 
