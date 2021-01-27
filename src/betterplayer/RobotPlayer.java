@@ -321,9 +321,10 @@ public strictfp class RobotPlayer {
             }
 
             if (botHasMoved) {
+                System.out.println(rc.getLocation().distanceSquaredTo(targetLocation));
                 progressTracker[progressCounter] = rc.getLocation().distanceSquaredTo(targetLocation);
                 progressCounter = (progressCounter + 1) % 5;
-                if (!hasMadeProgress(progressTracker)) {
+                if (!hasMadeProgress(progressTracker) || isAlternating(progressTracker)) {
                     System.out.println("~~~~~~~~~~~~~Has not made progress~~~~~~~~~~~");
                     bypassObstacle = true;
                 }
@@ -334,6 +335,20 @@ public strictfp class RobotPlayer {
 
             Clock.yield();
         }
+    }
+
+    // [ # , # , #, #, #]
+    // [ 1, 2, 1, 2, 1] => no progress has been made
+    // [ 1, 1, 1, 1, 1] => no progress has been made
+    // [25, 16, 9, 4, 1] => progress has been made
+
+    static private boolean isAlternating(int[] progressTracker) {
+        for (int i = 0; i < progressTracker.length-1; i++) {
+            if (progressTracker[i] != progressTracker[i+2]){
+                return false;
+            }
+        }
+        return true;
     }
 
     static private boolean hasMadeProgress(int[] progressTracker) {
