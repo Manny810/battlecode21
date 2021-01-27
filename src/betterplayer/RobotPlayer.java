@@ -225,6 +225,7 @@ public strictfp class RobotPlayer {
                     for (int i = 0; i < 8; i++) {
                         System.out.println(bugDirection);
                         if (rc.canMove(bugDirection) &&
+                                rc.onTheMap(rc.getLocation().add(bugDirection)) &&
                                 rc.sensePassability(rc.getLocation().add(bugDirection)) >= passabilityThreshold &&
                                 (rc.sensePassability(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection))) < passabilityThreshold ||
                                         (rc.isLocationOccupied(rc.getLocation().add(bugDirection).add(Utilities.leftHandSideForCurrentDirection(bugDirection)))))) { // Check if there's obstacle to left while tracing
