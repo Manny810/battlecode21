@@ -147,7 +147,7 @@ public class EnlightenmentCenter extends Robot {
                 freePoliticians.remove(assigned);
             }
 
-            int bidAmount = slandererCount;
+            int bidAmount = (int) (slandererCount * .25);
             if (rc.canBid(bidAmount)) {
                 System.out.println("Bidding " + bidAmount);
                 rc.bid(bidAmount);
