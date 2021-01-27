@@ -429,16 +429,16 @@ public class EnlightenmentCenter extends Robot {
             System.out.println("ID: " + id);
             System.out.println("Extra Info: " + type);
             neutralECLocations.add(location);
+            influenceMap.put(location, robotInfluence);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
-                influenceMap.put(location, robotInfluence);
             }
 
         } else if (type == 2) {
             enemyECLocations.add(location);
+            influenceMap.put(location, robotInfluence);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
-                influenceMap.put(location, robotInfluence);
             }
             neutralECLocations.remove(location);
             teamECLocations.remove(location);
