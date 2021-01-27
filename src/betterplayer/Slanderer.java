@@ -91,6 +91,7 @@ public class Slanderer extends Robot {
 
     @Override
     public void run() throws GameActionException {
+
         if (rc.getType().equals(RobotType.POLITICIAN)){
             if (targetLocation == null){
                 if (rc.canGetFlag(enlightmentCenterId)) {
@@ -99,7 +100,8 @@ public class Slanderer extends Robot {
                     targetLocation = enlightmentCenterLocation;
                 }
 
-            } else{
+            }
+            if (targetLocation != null){
                 System.out.println("My target Location Bro: " + targetLocation.toString());
 //                RobotPlayer.basicBugStraightLine(targetLocation, true);
                 RobotPlayer.basicBugStraightLineWithIgnoreObstacle(targetLocation, true);

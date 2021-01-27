@@ -301,11 +301,24 @@ public class EnlightenmentCenter extends Robot {
         if (neutralECLocations.size() != 0){
             for (MapLocation location: neutralECLocations){
                 if (assignedPerson.get(location).size() == 0){
+                    for (Integer id: freePoliticians){
+                        assignPerson(location, id);
+                        assignedLocation.put(id, location);
+                        target = location;
+                        int flag = 0;
+                        flag += locationToFlag(location); // location
+                        flag += (id % 256) * 128 * 128; // id of politician to move
+                        flag += 1 * 128 * 128 * 256; // specialized command
+                        flag += 1 * 128 * 128 * 256 * 2; // is a command
 
-                    target = location;
+                        rc.setFlag(flag);
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
 
+                        return id;
 
-
+                    }
 
                 }
 
@@ -314,7 +327,7 @@ public class EnlightenmentCenter extends Robot {
 
         if (enemyECLocations.size() != 0){
             for (MapLocation location: enemyECLocations){
-                if (assignedPerson.get(location).size() == 0 && influenceMap.get(location) < 50){
+                if (assignedPerson.get(location).size() == 0){
                     for (Integer id: freePoliticians){
 
                         target = location;
@@ -335,6 +348,53 @@ public class EnlightenmentCenter extends Robot {
                         return id;
                     }
 
+                }
+
+            }
+        }
+
+        if (freePoliticians.size() != 0) {
+            for (int id : freePoliticians) {
+                if (neutralECLocations.size() != 0) {
+                    for (MapLocation location : neutralECLocations) {
+
+                        assignPerson(location, id);
+
+                        assignedLocation.put(id, location);
+
+                        int flag = 0;
+                        flag += locationToFlag(location); // location
+                        flag += (id % 256) * 128 * 128; // id of politician to move
+                        flag += 1 * 128 * 128 * 256; // specialized command
+                        flag += 1 * 128 * 128 * 256 * 2; // is a command
+
+                        rc.setFlag(flag);
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
+
+                        return id;
+                    }
+                }
+                if (enemyECLocations.size() != 0) {
+                    for (MapLocation location : enemyECLocations) {
+
+                        assignPerson(location, id);
+                        assignedLocation.put(id, location);
+
+                        int flag = 0;
+                        flag += locationToFlag(location); // location
+                        flag += (id % 256) * 128 * 128; // id of politician to move
+                        flag += 1 * 128 * 128 * 256; // specialized command
+                        flag += 1 * 128 * 128 * 256 * 2; // is a command
+
+                        rc.setFlag(flag);
+                        System.out.println(assignedPerson);
+                        System.out.println("Location: " + location.toString());
+                        System.out.println("My Flag" + flag);
+
+                        return id;
+                    }
                 }
 
             }
@@ -374,16 +434,16 @@ public class EnlightenmentCenter extends Robot {
             System.out.println("ID: " + id);
             System.out.println("Extra Info: " + type);
             neutralECLocations.add(location);
+            influenceMap.put(location, robotInfluence);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
-                influenceMap.put(location, robotInfluence);
             }
 
         } else if (type == 2) {
             enemyECLocations.add(location);
+            influenceMap.put(location, robotInfluence);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
-                influenceMap.put(location, robotInfluence);
             }
             neutralECLocations.remove(location);
             teamECLocations.remove(location);
