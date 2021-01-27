@@ -18,9 +18,9 @@ public class EnlightenmentCenter extends Robot {
             RobotType.MUCKRAKER,
     };
 
-    static final double POLITICIAN_RATIO = 1.0;
-    static final double SLANDERER_RATIO = 4.0;
-    static final double MUCKRAKER_RATIO = 5.0;
+    static final double POLITICIAN_RATIO = 4.0;
+    static final double SLANDERER_RATIO = 3.0;
+    static final double MUCKRAKER_RATIO = 3.0;
     static final double TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1.0;
 
     static final int SLANDERER_INFLUENCE = 100;
@@ -290,6 +290,33 @@ public class EnlightenmentCenter extends Robot {
             target = null;
             return ret;
 
+        }
+
+        if (target != null){
+            if (freePoliticians.size() != 0) {
+                for (int id : freePoliticians) {
+
+
+                    assignPerson(target, id);
+
+                    assignedLocation.put(id, target);
+
+                    int flag = 0;
+                    flag += locationToFlag(target); // location
+                    flag += (id % 256) * 128 * 128; // id of politician to move
+                    flag += 1 * 128 * 128 * 256; // specialized command
+                    flag += 1 * 128 * 128 * 256 * 2; // is a command
+
+                    rc.setFlag(flag);
+                    System.out.println(assignedPerson);
+                    System.out.println("Location: " + target.toString());
+                    System.out.println("My Flag" + flag);
+
+                    return id;
+
+
+                }
+            }
         }
 
 
