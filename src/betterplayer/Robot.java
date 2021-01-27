@@ -232,7 +232,9 @@ public abstract class Robot {
         MapLocation location = robot.getLocation();
         RobotType type = robot.getType();
         Team team = robot.getTeam();
-        int flag = locationToFlag(location) + 128 * 128 * typeToFlag(type, team);
+        int influence = robot.getInfluence();
+        int hundredInfluence = (int) Math.ceil(influence/100);
+        int flag = locationToFlag(location) + 128 * 128 * typeToFlag(type, team) + hundredInfluence * 128 * 128 * 8;
         if (rc.canSetFlag(flag)) {
             rc.setFlag(flag);
             System.out.println("Sending Type: " + robot.getType().toString());
@@ -341,7 +343,16 @@ public abstract class Robot {
     }
 
     public Integer getExtraInfoFromFlag(int flag) {
+
         return ((flag / 128) / 128);
+    }
+
+    public Integer getInfluenceFromFlag(int flag){
+        return (getExtraInfoFromFlag(flag) / 8) * 100;
+    }
+
+    public Integer getTypeFromFlag(int flag){
+        return getExtraInfoFromFlag(flag) % 8;
     }
 
 

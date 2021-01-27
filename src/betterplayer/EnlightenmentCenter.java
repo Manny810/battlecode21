@@ -45,8 +45,12 @@ public class EnlightenmentCenter extends Robot {
 
     Set<Integer> freePoliticians = new HashSet<>();
 
+    MapLocation target = null;
+    int selectedPolitician;
+
     Map<MapLocation, Set<Integer>> assignedPerson = new HashMap<>();
     Map<Integer, MapLocation> assignedLocation = new HashMap<>();
+    Map<MapLocation, Integer> influenceMap = new HashMap<>();
 
     static int counter = 0;
     boolean start;
@@ -54,6 +58,7 @@ public class EnlightenmentCenter extends Robot {
     public EnlightenmentCenter(RobotController rc) throws GameActionException {
         super(rc);
         start = true;
+        selectedPolitician = -1;
     }
 
 
@@ -147,10 +152,15 @@ public class EnlightenmentCenter extends Robot {
 
             RobotType toBuild;
             int influence;
-            if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
+            boolean buildPolitician = (target != null);
+            if (buildPolitician){
+                toBuild = RobotType.POLITICIAN;
+                influence = influenceMap.get(target);
+            }
+            else if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
                 toBuild = RobotType.SLANDERER;
                 influence = SLANDERER_INFLUENCE;
-            } else if (muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO) {
+            } else if (muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO){
                 toBuild = RobotType.MUCKRAKER;
                 influence = MUCKRAKER_INFLUENCE;
             } else {
@@ -169,10 +179,16 @@ public class EnlightenmentCenter extends Robot {
                             newRobotId = robot.getID();
                         }
                     }
-                    if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
+                    if (buildPolitician){
+                        politicianCount++;
+                        freePoliticians.add(newRobotId);
+                        politicianIds.add(newRobotId);
+                        selectedPolitician = newRobotId;
+                    }
+                    else if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
                         slandererCount++;
                         slandererIds.add(newRobotId);
-                    } else if (muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO) {
+                    } else if(muckrakerCount / total <= MUCKRAKER_RATIO / TOTAL_RATIO) {
                         muckrakerCount++;
                         muckrakerIds.add(newRobotId);
                     } else {
@@ -243,17 +259,39 @@ public class EnlightenmentCenter extends Robot {
     }
 
     private int setECFlag() throws GameActionException {
-        Set<Integer> remove = new HashSet<>();
         if (freePoliticians.size() == 0){
             System.out.println("No more politicians");
         }
+
+        if (selectedPolitician != -1){
+            assignPerson(target, selectedPolitician);
+            assignedLocation.put(selectedPolitician, target);
+            int flag = 0;
+            flag += locationToFlag(target); // location
+            flag += (selectedPolitician % 256) * 128 * 128; // id of politician to move
+            flag += 1 * 128 * 128 * 256; // specialized command
+            flag += 1 * 128 * 128 * 256 * 2; // is a command
+
+            rc.setFlag(flag);
+            System.out.println(assignedPerson);
+            System.out.println("Location: " + target.toString());
+            System.out.println("My Flag" + flag);
+
+            int ret = selectedPolitician;
+            selectedPolitician = -1;
+            target = null;
+            return ret;
+
+        }
+
+
         if (neutralECLocations.size() != 0){
             for (MapLocation location: neutralECLocations){
                 if (assignedPerson.get(location).size() == 0){
                     for (Integer id: freePoliticians){
                         assignPerson(location, id);
                         assignedLocation.put(id, location);
-                        remove.add(id);
+                        target = location;
 
                         int flag = 0;
                         flag += locationToFlag(location); // location
@@ -374,49 +412,55 @@ public class EnlightenmentCenter extends Robot {
     private void readRobots(int id) throws GameActionException {
         int flag = rc.getFlag(id);
         MapLocation location = getLocationFromFlag(flag);
-        int extraInfo = getExtraInfoFromFlag(flag);
+        int type = getTypeFromFlag(flag);
+        int robotInfluence = getInfluenceFromFlag(flag);
 
-        if (extraInfo == 1){
+        if (type == 1){
             System.out.println("Got neutral EC");
             System.out.println("ID: " + id);
-            System.out.println("Extra Info: " + extraInfo);
+            System.out.println("Extra Info: " + type);
             neutralECLocations.add(location);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
+                influenceMap.put(location, robotInfluence);
             }
 
-        } else if (extraInfo == 2) {
+        } else if (type == 2) {
             enemyECLocations.add(location);
             if (!assignedPerson.containsKey(location)) {
                 assignedPerson.put(location, new HashSet<>());
+                influenceMap.put(location, robotInfluence);
             }
             neutralECLocations.remove(location);
             teamECLocations.remove(location);
             System.out.println("Got enemy EC");
             System.out.println("ID: " + id);
-            System.out.println("Extra Info: " + extraInfo);
-        } else if (extraInfo == 3) {
+            System.out.println("Extra Info: " + type);
+        } else if (type == 3) {
             enemyPoliticianLocations.add(location);
             System.out.println("Got politician");
             System.out.println("ID: " + id);
-            System.out.println("Extra Info: " + extraInfo);
-        } else if (extraInfo == 4) {
+            System.out.println("Extra Info: " + type);
+        } else if (type == 4) {
             enemySlandererLocations.add(location);
             System.out.println("Got Slanderer");
             System.out.println("ID: " + id);
-            System.out.println("Extra Info: " + extraInfo);
-        } else if (extraInfo == 5) {
+            System.out.println("Extra Info: " + type);
+        } else if (type == 5) {
             enemyMuckrakerLocations.add(location);
-        } else if (extraInfo == 6) {
+        } else if (type == 6) {
             teamECLocations.add(location);
             neutralECLocations.remove(location);
             enemyECLocations.remove(location);
 
             assignedPerson.remove(location);
+            if (location.equals(target)){
+                target = null;
+            }
         } else {
             System.out.println("Didn't read anything");
             System.out.println("ID: " + id);
-            System.out.println("Extra Info: " + extraInfo);
+            System.out.println("Extra Info: " + type);
         }
     }
 
