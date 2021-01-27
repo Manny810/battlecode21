@@ -209,8 +209,11 @@ public strictfp class RobotPlayer {
 
     static void basicBugStraightLineWithIgnoreObstacle (MapLocation targetLocation, boolean checkWithinSenseRadius) throws GameActionException {
         MapLocation startingLocation = rc.getLocation();
-        boolean tracingObstacle = false;
         boolean bypassObstacle = false;
+        if (rc.sensePassability(startingLocation) < passabilityThreshold) {
+            bypassObstacle = true;
+        }
+        boolean tracingObstacle = false;
         while (true) {
             Direction d = rc.getLocation().directionTo(targetLocation);
             int previousDistanceToTarget = rc.getLocation().distanceSquaredTo(targetLocation);
