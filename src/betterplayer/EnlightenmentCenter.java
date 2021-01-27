@@ -18,8 +18,8 @@ public class EnlightenmentCenter extends Robot {
             RobotType.MUCKRAKER,
     };
 
-    static final double POLITICIAN_RATIO = 3.0;
-    static final double SLANDERER_RATIO = 2.0;
+    static final double POLITICIAN_RATIO = 1.0;
+    static final double SLANDERER_RATIO = 4.0;
     static final double MUCKRAKER_RATIO = 5.0;
     static final double TOTAL_RATIO = POLITICIAN_RATIO + SLANDERER_RATIO + MUCKRAKER_RATIO + 1.0;
 
@@ -162,7 +162,11 @@ public class EnlightenmentCenter extends Robot {
             RobotType toBuild;
             int influence;
             boolean buildPolitician = (target != null);
+            int robotInfluence = 0;
             if (buildPolitician){
+                robotInfluence = influenceMap.get(target);
+            }
+            if (buildPolitician && robotInfluence < rc.getInfluence()){
                 toBuild = RobotType.POLITICIAN;
                 influence = influenceMap.get(target);
             }
@@ -297,25 +301,11 @@ public class EnlightenmentCenter extends Robot {
         if (neutralECLocations.size() != 0){
             for (MapLocation location: neutralECLocations){
                 if (assignedPerson.get(location).size() == 0){
-                    for (Integer id: freePoliticians){
-                        assignPerson(location, id);
-                        assignedLocation.put(id, location);
-                        target = location;
 
-                        int flag = 0;
-                        flag += locationToFlag(location); // location
-                        flag += (id % 256) * 128 * 128; // id of politician to move
-                        flag += 1 * 128 * 128 * 256; // specialized command
-                        flag += 1 * 128 * 128 * 256 * 2; // is a command
+                    target = location;
 
-                        rc.setFlag(flag);
-                        System.out.println(assignedPerson);
-                        System.out.println("Location: " + location.toString());
-                        System.out.println("My Flag" + flag);
 
-                        return id;
 
-                    }
 
                 }
 
@@ -324,10 +314,10 @@ public class EnlightenmentCenter extends Robot {
 
         if (enemyECLocations.size() != 0){
             for (MapLocation location: enemyECLocations){
-                if (assignedPerson.get(location).size() == 0){
+                if (assignedPerson.get(location).size() == 0 && influenceMap.get(location) < 50){
                     for (Integer id: freePoliticians){
 
-
+                        target = location;
                         assignPerson(location, id);
                         assignedLocation.put(id, location);
 
@@ -349,52 +339,7 @@ public class EnlightenmentCenter extends Robot {
 
             }
         }
-        if (freePoliticians.size() != 0){
-            for (int id : freePoliticians){
-                if (neutralECLocations.size() != 0) {
-                    for (MapLocation location : neutralECLocations) {
 
-                        assignPerson(location, id);
-
-                        assignedLocation.put(id, location);
-
-                        int flag = 0;
-                        flag += locationToFlag(location); // location
-                        flag += (id % 256) * 128 * 128; // id of politician to move
-                        flag += 1 * 128 * 128 * 256; // specialized command
-                        flag += 1 * 128 * 128 * 256 * 2; // is a command
-
-                        rc.setFlag(flag);
-                        System.out.println(assignedPerson);
-                        System.out.println("Location: " + location.toString());
-                        System.out.println("My Flag" + flag);
-
-                        return id;
-                    }
-                }
-                if (enemyECLocations.size() != 0) {
-                    for (MapLocation location : enemyECLocations) {
-
-                        assignPerson(location, id);
-                        assignedLocation.put(id, location);
-
-                        int flag = 0;
-                        flag += locationToFlag(location); // location
-                        flag += (id % 256) * 128 * 128; // id of politician to move
-                        flag += 1 * 128 * 128 * 256; // specialized command
-                        flag += 1 * 128 * 128 * 256 * 2; // is a command
-
-                        rc.setFlag(flag);
-                        System.out.println(assignedPerson);
-                        System.out.println("Location: " + location.toString());
-                        System.out.println("My Flag" + flag);
-
-                        return id;
-                    }
-                }
-
-            }
-        }
         System.out.println("Not setting flag to anything");
         System.out.println("enemyECLocations size: " + enemyECLocations.size());
         System.out.println("neutral EC Locations size: " + neutralECLocations.size());
