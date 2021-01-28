@@ -167,7 +167,7 @@ public class EnlightenmentCenter extends Robot {
                 robotInfluence = influenceMap.get(target);
             }
             boolean first = false;
-            if (buildPolitician && robotInfluence < rc.getInfluence()){
+            if (buildPolitician && robotInfluence < rc.getInfluence() && robotInfluence != 0){
                 toBuild = RobotType.POLITICIAN;
                 influence = influenceMap.get(target);
                 first = true;
