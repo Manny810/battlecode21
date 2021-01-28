@@ -233,7 +233,7 @@ public abstract class Robot {
         RobotType type = robot.getType();
         Team team = robot.getTeam();
         int influence = robot.getInfluence();
-        int hundredInfluence = (int) Math.ceil(influence/100);
+        int hundredInfluence = (int) Math.ceil((double) influence/100);
         int flag = locationToFlag(location) + 128 * 128 * typeToFlag(type, team) + hundredInfluence * 128 * 128 * 8;
         if (rc.canSetFlag(flag)) {
             rc.setFlag(flag);
