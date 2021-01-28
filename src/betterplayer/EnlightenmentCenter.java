@@ -183,7 +183,11 @@ public class EnlightenmentCenter extends Robot {
                 influence = POLITICIAN_INFLUENCE;
             }
 
+            System.out.println("Playable directions " + playableDirections);
             for (Direction dir : playableDirections) {
+                System.out.println("$$$$ " + influence);
+                System.out.println("$MAP$ " + influenceMap + "    TARGET  " + target);
+                System.out.println("Can build or nah" + rc.canBuildRobot(toBuild,dir,influence));
                 if (rc.canBuildRobot(toBuild, dir, influence)) {
                     rc.buildRobot(toBuild, dir, influence);
                     MapLocation newRobot = rc.getLocation().add(dir);
