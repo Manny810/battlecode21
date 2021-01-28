@@ -342,6 +342,7 @@ public strictfp class RobotPlayer {
     // [ 1, 1, 1, 1, 1] => no progress has been made
     // [25, 16, 9, 4, 1] => progress has been made
 
+
     static private boolean isAlternating(int[] progressTracker) {
         for (int i = 0; i < progressTracker.length-1; i++) {
             if (progressTracker[i] != progressTracker[i+2]){
