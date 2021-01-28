@@ -166,9 +166,11 @@ public class EnlightenmentCenter extends Robot {
             if (buildPolitician){
                 robotInfluence = influenceMap.get(target);
             }
+            boolean first = false;
             if (buildPolitician && robotInfluence < rc.getInfluence()){
                 toBuild = RobotType.POLITICIAN;
                 influence = influenceMap.get(target);
+                first = true;
             }
             else if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
                 toBuild = RobotType.SLANDERER;
@@ -192,7 +194,7 @@ public class EnlightenmentCenter extends Robot {
                             newRobotId = robot.getID();
                         }
                     }
-                    if (buildPolitician){
+                    if (first){
                         politicianCount++;
                         freePoliticians.add(newRobotId);
                         politicianIds.add(newRobotId);
