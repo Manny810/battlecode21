@@ -169,7 +169,7 @@ public class EnlightenmentCenter extends Robot {
             boolean first = false;
             if (buildPolitician && robotInfluence < rc.getInfluence()){
                 toBuild = RobotType.POLITICIAN;
-                influence = influenceMap.get(target);
+                influence = robotInfluence;
                 first = true;
             }
             else if (slandererCount / total <= SLANDERER_RATIO / TOTAL_RATIO) {
